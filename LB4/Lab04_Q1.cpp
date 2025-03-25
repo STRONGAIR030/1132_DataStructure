@@ -4,6 +4,12 @@
 #include <vector>
 using namespace std;
 // 表示單張撲克牌的類別
+#include <chrono>
+#include <ctime>
+
+unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();  // 用時間當作seed
+std::mt19937 gen(seed);                                                       // 用mt19937引擎，並且設定seed
+
 class Card {
    public:
     string colors;                                    // 儲存撲克牌的花色
@@ -66,8 +72,6 @@ class Deck {
 
     // 洗牌(Hint:使用函數)
     void shuffleDeck() {
-        random_device rd;
-        mt19937 gen(rd());
         shuffle(cards.begin(), cards.end(), gen);  // 使用shuffle函數將cards洗牌
 
         // 將洗過的牌放入shuffledDeck這個stack
