@@ -5,233 +5,234 @@
 #include <string>
 #include <vector>
 using namespace std;
-struct Player {   // ç©å®¶çµæ§‹é«”ï¼ŒåŒ…å«åç¨±å’Œåˆ†æ•¸
-    string name;  // ç©å®¶åç¨±
-    int score;    // ç©å®¶åˆ†æ•¸
+struct Player {   // ª±®aµ²ºcÅé¡A¥]§t¦WºÙ©M¤À¼Æ
+    string name;  // ª±®a¦WºÙ
+    int score;    // ª±®a¤À¼Æ
 };
-class Card {  // å»ºç«‹ä¸€å€‹Cardé¡åˆ¥ï¼Œç”¨ä¾†è¡¨ç¤ºå–®å¼µæ’²å…‹ç‰Œ
+class Card {  // «Ø¥ß¤@­ÓCardÃş§O¡A¥Î¨Óªí¥Ü³æ±i¼³§JµP
    public:
-    string suit;  // èŠ±è‰²
-    string rank;  // é»æ•¸
+    string suit;  // ªá¦â
+    string rank;  // ÂI¼Æ
     Card() {}
     Card(string s, string r) : suit(s), rank(r) {}
     void display() const {
         cout << rank << " of " << suit << endl;
     }
 };
-class Deck {  // ç‰Œçµ„é¡åˆ¥ï¼Œè² è²¬ç”Ÿæˆå’Œæ´—ç‰Œ
+class Deck {  // µP²ÕÃş§O¡A­t³d¥Í¦¨©M¬~µP
    private:
-    Card cards[52];  // 52 å¼µç‰Œ
-    int index;       // ç›®å‰ç™¼ç‰Œç´¢å¼•
+    Card cards[52];  // 52 ±iµP
+    int index;       // ¥Ø«eµoµP¯Á¤Ş
    public:
-    Deck() : index(0) {                                                                       // åˆå§‹åŒ–ç‰Œçµ„
-        string suits[] = {"Hearts", "Diamonds", "Clubs", "Spades"};                           // å››ç¨®èŠ±è‰²
-        string ranks[] = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"};  // 13 å¼µç‰Œ
+    Deck() : index(0) {                                                                       // ªì©l¤ÆµP²Õ
+        string suits[] = {"Hearts", "Diamonds", "Clubs", "Spades"};                           // ¥|ºØªá¦â
+        string ranks[] = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"};  // 13 ±iµP
         int k = 0;
-        for (int i = 0; i < 4; i++) {       // 4 ç¨®èŠ±è‰²
-            for (int j = 0; j < 13; j++) {  // 13 ç¨®é»æ•¸
+        for (int i = 0; i < 4; i++) {       // 4 ºØªá¦â
+            for (int j = 0; j < 13; j++) {  // 13 ºØÂI¼Æ
                 cards[k] = Card(suits[i], ranks[j]);
                 k++;
             }
         }
     }
 
-    void shuffleDeck() {  // æ´—ç‰Œ
+    void shuffleDeck() {  // ¬~µP
         srand(time(0));
-        for (int i = 51; i > 0; i--) {  // å¾æœ€å¾Œä¸€å¼µç‰Œé–‹å§‹ï¼Œå‘å‰éæ­·
-            int j = rand() % (i + 1);   // ç”Ÿæˆéš¨æ©Ÿç´¢å¼• j
-            swap(cards[i], cards[j]);   // äº¤æ›ç‰Œçµ„ä¸­çš„å…©å¼µç‰Œ
+        for (int i = 51; i > 0; i--) {  // ±q³Ì«á¤@±iµP¶}©l¡A¦V«e¹M¾ú
+            int j = rand() % (i + 1);   // ¥Í¦¨ÀH¾÷¯Á¤Ş j
+            swap(cards[i], cards[j]);   // ¥æ´«µP²Õ¤¤ªº¨â±iµP
         }
     }
-    // å–å¾—æŒ‡å®šä½ç½®çš„ç‰Œ
+    // ¨ú±o«ü©w¦ì¸mªºµP
     Card getCard(int i) const {
         return cards[i];
     }
 };
-// Queue é¡åˆ¥
+// Queue Ãş§O
 class Queue {
    private:
-    vector<Card> deck;  // ç”¨ä¾†å­˜æ”¾å¡ç‰Œçš„å®¹å™¨
-    int Front;          // æŒ‡å‘ç‰Œå †çš„å‰ç«¯
-    int Rear;           // æŒ‡å‘ç‰Œå †çš„å°¾ç«¯
-    int capacity;       // å®¹å™¨æœ€å¤§å®¹é‡
+    vector<Card> deck;  // ¥Î¨Ó¦s©ñ¥dµPªº®e¾¹
+    int Front;          // «ü¦VµP°ïªº«eºİ
+    int Rear;           // «ü¦VµP°ïªº§Àºİ
+    int capacity;       // ®e¾¹³Ì¤j®e¶q
    public:
-    // å»ºæ§‹å‡½å¼
+    // «Øºc¨ç¦¡
     Queue(int size) : Front(-1), Rear(-1), capacity(size) {}
-    // æ’å…¥å…ƒç´ åˆ°ä½‡åˆ—å°¾ç«¯
+    // ´¡¤J¤¸¯À¨ì¦î¦C§Àºİ
     void enqueue(Card card) {
-        // æç¤º:æª¢æŸ¥æ˜¯å¦æ»¿ï¼Œå¦‚æœæ»¿äº†è«‹å°å‡ºæç¤ºèªï¼›å¦‚æœä¸æ˜¯æ»¿çš„ï¼Œ
-        // å‰‡å°‡cardæ”¾å…¥åˆ°deck(ä½¿ç”¨push_back)ï¼Œç„¶å¾Œå°‡RearæŒ‡æ¨™ç§»å‹•
+        // ´£¥Ü:ÀË¬d¬O§_º¡¡A¦pªGº¡¤F½Ğ¦L¥X´£¥Ü»y¡F¦pªG¤£¬Oº¡ªº¡A
+        // «h±Ncard©ñ¤J¨ìdeck(¨Ï¥Îpush_back)¡AµM«á±NRear«ü¼Ğ²¾°Ê
         if (isFull()) {
-            cout << "ç‰Œå †æ»¿äº†ï¼Œç„¡æ³•åŠ å…¥æ–°ç‰Œ!" << endl;
+            cout << "µP°ïº¡¤F¡AµLªk¥[¤J·sµP!" << endl;
             return;
         }
 
         deck.push_back(card);
         Rear++;
     }
-    // å¾ä½‡åˆ—ä¸­ç§»é™¤æœ€å‰ç«¯å…ƒç´ 
+    // ±q¦î¦C¤¤²¾°£³Ì«eºİ¤¸¯À
     void dequeue() {
-        // æç¤º:æª¢æŸ¥æ˜¯å¦ç©ºï¼Œå¦‚æ˜¯ç©ºçš„ï¼Œå°å‡ºæç¤ºèªï¼›å¦‚æœä¸æ˜¯ç©ºçš„ï¼Œç§»å‹•FrontæŒ‡æ¨™
-        // å¦‚æœFrontæŒ‡æ¨™ç­‰æ–¼Rearï¼Œå‰‡é‡ç½®Frontå’ŒRearï¼Œä¸¦æ¸…ç©ºdeck
-        //(å¯ä»¥ä½¿ç”¨clearå‡½æ•¸)
+        // ¦pªG¬°ªÅ¡A«h¦L¥X´£¥Ü»y¨Ãªğ¦^
         if (isEmpty()) {
-            cout << "ç‰Œå †ç‚ºç©ºï¼Œç„¡æ³•ç§»é™¤ç‰Œäº†!" << endl;
+            cout << "µP°ï¬°ªÅ¡AµLªk²¾°£µP¤F!" << endl;
             return;
         }
 
-        Front++;
+        // ¦pªG¤£¬°ªÅ¡A«h±NFront«ü¼Ğ²¾°Ê¡A¨Ã¥BÀË¬d¬O§_¬°ªÅ
+        Front++;  // ±NFront«ü¼Ğ²¾°Ê¨ì¤U¤@­Ó¦ì¸m
 
+        // ¬d¬İ¬O§_¬°ªÅ
         if (Front == Rear) {
+            // ¬°ªÅ´N²MªÅ¦î¦C¡A­«»s Front ©M Rear
             deck.clear();
             Front = -1;
             Rear = -1;
         }
     }
-    Card front() {        // ç²å–ä½‡åˆ—æœ€å‰ç«¯å…ƒç´ 
-        if (isEmpty()) {  // æª¢æŸ¥æ˜¯å¦ç©º
-            cout << "ç‰Œå †ç‚ºç©ºï¼Œç„¡æ³•ç²å–æœ€å‰ç«¯çš„ç‰Œï¼" << endl;
+    Card front() {        // Àò¨ú¦î¦C³Ì«eºİ¤¸¯À
+        if (isEmpty()) {  // ÀË¬d¬O§_ªÅ
+            cout << "µP°ï¬°ªÅ¡AµLªkÀò¨ú³Ì«eºİªºµP¡I" << endl;
             return Card("", "");
         }
-        return deck[Front];
+        return deck[Front + 1];  // ªğ¦^³Ì«eºİªºµP
     }
-    bool isEmpty() const {  // åˆ¤æ–·ä½‡åˆ—æ˜¯å¦ç‚ºç©º
+    bool isEmpty() const {  // §PÂ_¦î¦C¬O§_¬°ªÅ
+        // Front == Rear ¥Nªí¦î¦C¬°ªÅ¡A¦]¬°Front«ü¦Vªº¬O³Ì«eºİªºµP¡A¦ÓRear«ü¦Vªº¬O³Ì«á¤@±iµP
         if (Front == Rear) {
-            cout << "ç‰Œå †ç‚ºç©º" << endl;
+            cout << "µP°ï¬°ªÅ" << endl;
             return true;
         } else {
             return false;
         }
-
-        // æç¤º:frontå’Œrearçš„é—œä¿‚ï¼Œä¸¦ä¸”æœ‰å…©å€‹æƒ…æ³è¦æª¢æŸ¥(ç”¨&&)
     }
-    bool isFull() const {  // åˆ¤æ–·ä½‡åˆ—æ˜¯å¦å·²æ»¿
+    bool isFull() const {  // §PÂ_¦î¦C¬O§_¤wº¡
+        // Rear == capacity - 1 ¥Nªí¦î¦C¤wº¡¡A¦ÓRear«ü¦Vªº¬O³Ì«á¤@±iµP
         if (Rear == capacity - 1) {
-            cout << "ç‰Œå †æ»¿äº†" << endl;
+            cout << "µP°ïº¡¤F" << endl;
             return true;
         } else {
             return false;
         }
     }
 };
-void initializeDeck(Queue& cardDeck) {  // åˆå§‹åŒ–ä¸¦æ´—ç‰Œ
+void initializeDeck(Queue& cardDeck) {  // ªì©l¤Æ¨Ã¬~µP
     Deck deck;
-    cout << "åˆå§‹ç‰Œå †: \n";
+    cout << "ªì©lµP°ï: \n";
     for (int i = 0; i < 52; i++) {
-        deck.getCard(i).display();  // å°å‡ºåŸå§‹ç‰Œå †
+        deck.getCard(i).display();  // ¦L¥X­ì©lµP°ï
     }
-    deck.shuffleDeck();  // æ´—ç‰Œ
-    cout << "\næ´—ç‰Œå¾Œçš„ç‰Œå †: \n";
+    deck.shuffleDeck();  // ¬~µP
+    cout << "\n¬~µP«áªºµP°ï: \n";
     for (int i = 0; i < 52; i++) {
-        deck.getCard(i).display();  // å°å‡ºæ´—ç‰Œå¾Œçš„ç‰Œå †
+        deck.getCard(i).display();  // ¦L¥X¬~µP«áªºµP°ï
     }
-    for (int i = 0; i < 52; i++)
-        cardDeck.enqueue(deck.getCard(i));
-    // æç¤º:å°‡æ´—å¥½çš„ç‰Œæ”¾å…¥ç‰Œå †
-    // ä½¿ç”¨forè¿´åœˆï¼Œå°‡æ´—å¥½çš„ç‰Œ(deck.getCard(i))æ”¾å…¥ç‰Œå †
+    for (int i = 0; i < 52; i++) {
+        cardDeck.enqueue(deck.getCard(i));  // ±N¬~¦nªºµP©ñ¤JµP°ï
+    }
 }
-void initializePlayer(Player* player, string name, Queue& cardDeck) {  // åˆå§‹åŒ–ç©å®¶ï¼Œç™¼å…©å¼µç‰Œ
-    player->name = name;                                               // ç©å®¶åç¨±
-    player->score = 0;                                                 // ç©å®¶åˆ†æ•¸
-    cout << player->name << " æŠ½åˆ°çš„ç‰Œ: ";
+void initializePlayer(Player* player, string name, Queue& cardDeck) {  // ªì©l¤Æª±®a¡Aµo¨â±iµP
+    player->name = name;                                               // ª±®a¦WºÙ
+    player->score = 0;                                                 // ª±®a¤À¼Æ
+    cout << player->name << " ©â¨ìªºµP: ";
 
-    for (int i = 0; i < 2; i++) {  // ç™¼å…©å¼µç‰Œ
-                                   // æç¤º:å¾ç‰Œå †ä¸­å–å‡ºä¸€å¼µç‰Œï¼Œç„¶å¾Œå¾ç‰Œå †ä¸­ç§»é™¤é€™å¼µç‰Œ
-        // æ³¨æ„:å¡ç‰Œè®Šæ•¸çš„é¡å‹æ˜¯Cardï¼Œä¸¦ä¸”ä½¿ç”¨frontæŠ½ç‰Œ
+    for (int i = 0; i < 2; i++) {  // µo¨â±iµP
+                                   // ´£¥Ü:±qµP°ï¤¤¨ú¥X¤@±iµP¡AµM«á±qµP°ï¤¤²¾°£³o±iµP
+        // ª`·N:¥dµPÅÜ¼ÆªºÃş«¬¬OCard¡A¨Ã¥B¨Ï¥Îfront©âµP
 
-        Card drawnCard = cardDeck.front();
-        cout << cardDeck.front().rank << " of " << cardDeck.front().suit << "  ";  // å°å‡ºæŠ½åˆ°çš„ç‰Œ
-        cardDeck.dequeue();
+        Card drawnCard = cardDeck.front();  // ©âµP
+        cardDeck.dequeue();                 // ²¾°£©â¨ìªºµP
+
+        cout << drawnCard.rank << " of " << drawnCard.suit << "  ";  // ¦L¥X©â¨ìªºµP
 
         if (drawnCard.rank == "A")
-            player->score += 1;  // è¨ˆç®—Aé»æ•¸
+            player->score += 1;  // ­pºâAÂI¼Æ
         else if (drawnCard.rank == "J" || drawnCard.rank == "Q" || drawnCard.rank == "K")
-            player->score += 10;  // è¨ˆç®—JQKé»æ•¸
+            player->score += 10;  // ­pºâJQKÂI¼Æ
         else
-            player->score += stoi(drawnCard.rank);  // è¨ˆç®—2-10é»æ•¸
+            player->score += stoi(drawnCard.rank);  // ­pºâ2-10ÂI¼Æ
     }
     cout << "\n";
-    cout << player->name << " ç©å®¶çš„åˆå§‹åˆ†æ•¸: " << player->score << endl;  // å°å‡ºç©å®¶çš„åˆå§‹é»æ•¸
+    cout << player->name << " ª±®aªºªì©l¤À¼Æ: " << player->score << endl;  // ¦L¥Xª±®aªºªì©lÂI¼Æ
 }
 
-void playerTurn(Player* player, Queue& cardDeck) {  // ç©å®¶å›åˆ
+void playerTurn(Player* player, Queue& cardDeck) {  // ª±®a¦^¦X
     char choice;
-    while (player->score < 21 && !cardDeck.isEmpty()) {                                                        // ç©å®¶å°æ–¼21é»ä¸”ç‰Œå †ä¸ç‚ºç©º
-        cout << player->name << " æ‚¨çš„æ‰‹ç‰Œåˆ†æ•¸ç›®å‰ç‚º: " << player->score << " è¦æŠ½ç‰Œå—ï¼Ÿ(h = æŠ½, s = åœ) : ";  // é¡¯ç¤ºé¸æ“‡
-        cin >> choice;                                                                                         // è¼¸å…¥é¸æ“‡
+    while (player->score < 21 && !cardDeck.isEmpty()) {                                                        // ª±®a¤p©ó21ÂI¥BµP°ï¤£¬°ªÅ
+        cout << player->name << " ±zªº¤âµP¤À¼Æ¥Ø«e¬°: " << player->score << " ­n©âµP¶Ü¡H(h = ©â, s = °±) : ";  // Åã¥Ü¿ï¾Ü
+        cin >> choice;                                                                                         // ¿é¤J¿ï¾Ü
 
-        if (choice == 'h') {  // å¦‚æœç©å®¶é¸æ“‡æŠ½ç‰Œ
-            // æç¤º:å¾ç‰Œå †ä¸­å–å‡ºä¸€å¼µç‰Œï¼Œç„¶å¾Œå¾ç‰Œå †ä¸­ç§»é™¤é€™å¼µç‰Œ
-            // æ³¨æ„:å¡ç‰Œè®Šæ•¸çš„é¡å‹æ˜¯Cardï¼Œä¸¦ä¸”ä½¿ç”¨frontæŠ½ç‰Œ
-            Card newCard = cardDeck.front();
-            cardDeck.dequeue();
+        if (choice == 'h') {  // ¦pªGª±®a¿ï¾Ü©âµP
+            // ´£¥Ü:±qµP°ï¤¤¨ú¥X¤@±iµP¡AµM«á±qµP°ï¤¤²¾°£³o±iµP
+            // ª`·N:¥dµPÅÜ¼ÆªºÃş«¬¬OCard¡A¨Ã¥B¨Ï¥Îfront©âµP
+            Card newCard = cardDeck.front();  // ©âµP
+            cardDeck.dequeue();               // ²¾°£©â¨ìªºµP
 
             if (newCard.rank == "A")
-                player->score += 1;  // è¨ˆç®—Aé»æ•¸
+                player->score += 1;  // ­pºâAÂI¼Æ
             else if (newCard.rank == "J" || newCard.rank == "Q" || newCard.rank == "K")
-                player->score += 10;  // è¨ˆç®—JQKé»æ•¸
+                player->score += 10;  // ­pºâJQKÂI¼Æ
             else
-                player->score += stoi(newCard.rank);  // è¨ˆç®—2-10é»æ•¸
-            // å°å‡ºæŠ½åˆ°çš„ç‰Œå’Œç¸½é»æ•¸
-            cout << player->name << " æŠ½åˆ°: " << newCard.rank << " of " << newCard.suit << " ç¸½åˆ†: " << player->score << endl;
-            if (player->score > 21) {                             // å¦‚æœç©å®¶å¤§æ–¼21é»
-                cout << player->name << " çˆ†æ‰äº†ï¼éŠæˆ²çµæŸã€‚\n";  // ç©å®¶çˆ†ç‰Œï¼ŒèŠå®¶ç²å‹
+                player->score += stoi(newCard.rank);  // ­pºâ2-10ÂI¼Æ
+            // ¦L¥X©â¨ìªºµP©MÁ`ÂI¼Æ
+            cout << player->name << " ©â¨ì: " << newCard.rank << " of " << newCard.suit << " Á`¤À: " << player->score << endl;
+            if (player->score > 21) {                             // ¦pªGª±®a¤j©ó21ÂI
+                cout << player->name << " Ãz±¼¤F¡I¹CÀ¸µ²§ô¡C\n";  // ª±®aÃzµP¡A²ø®aÀò³Ó
                 return;
             }
-        } else if (choice == 's') {                                                // å¦‚æœç©å®¶é¸æ“‡åœç‰Œ
-            cout << player->name << " é¸æ“‡åœç‰Œï¼Œç¸½åˆ†: " << player->score << endl;  // å°å‡ºç¸½é»æ•¸
+        } else if (choice == 's') {                                                // ¦pªGª±®a¿ï¾Ü°±µP
+            cout << player->name << " ¿ï¾Ü°±µP¡AÁ`¤À: " << player->score << endl;  // ¦L¥XÁ`ÂI¼Æ
             break;
         } else {
-            cout << "è«‹è¼¸å…¥æœ‰æ•ˆé¸é … (h = æŠ½, s = åœ)ï¼" << endl;  // è¼¸å…¥ç„¡æ•ˆ
+            cout << "½Ğ¿é¤J¦³®Ä¿ï¶µ (h = ©â, s = °±)¡I" << endl;  // ¿é¤JµL®Ä
         }
     }
 }
-void dealerTurn(Player* dealer, Queue& cardDeck) {       // èŠå®¶å›åˆ
-    while (dealer->score < 17 && !cardDeck.isEmpty()) {  // èŠå®¶å°æ–¼17é»ä¸”ç‰Œå †ä¸ç‚ºç©º
-                                                         // æç¤º:å¾ç‰Œå †ä¸­å–å‡ºä¸€å¼µç‰Œï¼Œç„¶å¾Œå¾ç‰Œå †ä¸­ç§»é™¤é€™å¼µç‰Œ
-                                                         // æ³¨æ„:å¡ç‰Œè®Šæ•¸çš„é¡å‹æ˜¯Cardï¼Œä¸¦ä¸”ä½¿ç”¨frontæŠ½ç‰Œ
-        Card newCard = cardDeck.front();
-        cardDeck.dequeue();
+void dealerTurn(Player* dealer, Queue& cardDeck) {       // ²ø®a¦^¦X
+    while (dealer->score < 17 && !cardDeck.isEmpty()) {  // ²ø®a¤p©ó17ÂI¥BµP°ï¤£¬°ªÅ
+                                                         // ´£¥Ü:±qµP°ï¤¤¨ú¥X¤@±iµP¡AµM«á±qµP°ï¤¤²¾°£³o±iµP
+                                                         // ª`·N:¥dµPÅÜ¼ÆªºÃş«¬¬OCard¡A¨Ã¥B¨Ï¥Îfront©âµP
+        Card newCard = cardDeck.front();                 // ©âµP
+        cardDeck.dequeue();                              // ²¾°£©â¨ìªºµP
 
         if (newCard.rank == "A")
-            dealer->score += 1;  // è¨ˆç®—Aé»æ•¸
+            dealer->score += 1;  // ­pºâAÂI¼Æ
         else if (newCard.rank == "J" || newCard.rank == "Q" || newCard.rank == "K")
-            dealer->score += 10;  // è¨ˆç®—JQKé»æ•¸
+            dealer->score += 10;  // ­pºâJQKÂI¼Æ
         else
-            dealer->score += stoi(newCard.rank);  // è¨ˆç®—2-10é»æ•¸
-        // å°å‡ºæŠ½åˆ°çš„ç‰Œå’Œç¸½é»æ•¸
-        cout << "èŠå®¶æŠ½åˆ°: " << newCard.rank << " of " << newCard.suit << " èŠå®¶ç›®å‰ç¸½åˆ†: " << dealer->score << endl;
-        if (dealer->score > 21) {                    // å¦‚æœèŠå®¶å¤§æ–¼21é»
-            cout << "èŠå®¶çˆ†äº†ï¼ç©å®¶ç²å‹ï¼" << endl;  // ç©å®¶ç²å‹
+            dealer->score += stoi(newCard.rank);  // ­pºâ2-10ÂI¼Æ
+        // ¦L¥X©â¨ìªºµP©MÁ`ÂI¼Æ
+        cout << "²ø®a©â¨ì: " << newCard.rank << " of " << newCard.suit << " ²ø®a¥Ø«eÁ`¤À: " << dealer->score << endl;
+        if (dealer->score > 21) {                    // ¦pªG²ø®a¤j©ó21ÂI
+            cout << "²ø®aÃz¤F¡Iª±®aÀò³Ó¡I" << endl;  // ª±®aÀò³Ó
             return;
         }
     }
 }
 
-// åˆ¤æ–·å‹è² 
+// §PÂ_³Ó­t
 void determineWinner(Player* player, Player* dealer) {
     if (player->score > 21)
-        cout << player->name << " çˆ†äº†ï¼èŠå®¶ç²å‹ï¼\n";  // ç©å®¶çˆ†ç‰Œï¼ŒèŠå®¶ç²å‹
+        cout << player->name << " Ãz¤F¡I²ø®aÀò³Ó¡I\n";  // ª±®aÃzµP¡A²ø®aÀò³Ó
     else if (dealer->score > 21 || player->score > dealer->score)
-        cout << player->name << " è´äº†ï¼\n";  // èŠå®¶çˆ†ç‰Œæˆ–ç©å®¶é»æ•¸å¤§æ–¼èŠå®¶ï¼Œç©å®¶ç²å‹
+        cout << player->name << " Ä¹¤F¡I\n";  // ²ø®aÃzµP©Îª±®aÂI¼Æ¤j©ó²ø®a¡Aª±®aÀò³Ó
     else if (player->score == dealer->score)
-        cout << "å¹³æ‰‹ï¼\n";  // èŠå®¶èˆ‡ç©å®¶é»æ•¸ç›¸åŒï¼Œå¹³æ‰‹
+        cout << "¥­¤â¡I\n";  // ²ø®a»Pª±®aÂI¼Æ¬Û¦P¡A¥­¤â
     else
-        cout << "èŠå®¶è´äº†ï¼\n";
+        cout << "²ø®aÄ¹¤F¡I\n";
 }
 
 int main() {
     srand(time(0));
-    Queue cardDeck(52);        // å®£å‘Šç‰Œå †
-    initializeDeck(cardDeck);  // åˆå§‹åŒ–ç‰Œå †
+    Queue cardDeck(52);        // «Å§iµP°ï
+    initializeDeck(cardDeck);  // ªì©l¤ÆµP°ï
 
-    Player player, dealer;  // å®£å‘Šä¸¦åˆå§‹åŒ–èŠå®¶ä»¥åŠç©å®¶
-    initializePlayer(&player, "ç©å®¶", cardDeck);
-    initializePlayer(&dealer, "èŠå®¶", cardDeck);
+    Player player, dealer;  // «Å§i¨Ãªì©l¤Æ²ø®a¥H¤Îª±®a
+    initializePlayer(&player, "ª±®a", cardDeck);
+    initializePlayer(&dealer, "²ø®a", cardDeck);
 
     playerTurn(&player, cardDeck);
     if (player.score <= 21) {
-        cout << "\nèŠå®¶å›åˆ...\n";
+        cout << "\n²ø®a¦^¦X...\n";
         dealerTurn(&dealer, cardDeck);
         determineWinner(&player, &dealer);
     }
