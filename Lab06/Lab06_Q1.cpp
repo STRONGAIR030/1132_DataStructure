@@ -3,61 +3,63 @@
 #include <iostream>
 using namespace std;
 
-// å®šç¾© Stack çš„ç¯€é»çµæ§‹
+// ©w¸q Stack ªº¸`ÂIµ²ºc
 struct Node {
-    char data;   // å­˜å„²å­—ç¬¦ (é‹ç®—å­æˆ–æ‹¬è™Ÿ)
-    Node* next;  // æŒ‡å‘ä¸‹ä¸€å€‹ç¯€é»
+    char data;   // ¦sÀx¦r²Å (¹Bºâ¤l©Î¬A¸¹)
+    Node* next;  // «ü¦V¤U¤@­Ó¸`ÂI
 };
 
-// ä½¿ç”¨ linked list å¯¦ä½œ Stack
+// ¨Ï¥Î linked list ¹ê§@ Stack
 class Stack {
    private:
-    Node* top;  // æŒ‡å‘å †ç–Šé ‚ç«¯
+    Node* top;  // «ü¦V°ïÅ|³»ºİ
    public:
-    Stack() { top = nullptr; }  // åˆå§‹åŒ–å †ç–Š
+    Stack() { top = nullptr; }  // ªì©l¤Æ°ïÅ|
 
-    // Push æ“ä½œï¼šå°‡å…ƒç´ æ”¾å…¥å †ç–Š
+    // Push ¾Ş§@¡G±N¤¸¯À©ñ¤J°ïÅ|
     void push(char ch) {
-        Node* temp = new Node;
-        temp->data = ch;
-        temp->next = top;
-        top = temp;
+        Node* temp = new Node;  // ³Ğ«Ø·s¸`ÂI
+        temp->data = ch;        // ³]©w¸`ÂI¼Æ¾Ú
+        temp->next = top;       // ±N·s¸`ÂIªº next «ü¦V·í«eªº top
+        top = temp;             // §ó·s top ¬°·s¸`ÂI
     }
 
-    // Pop æ“ä½œï¼šç§»é™¤ä¸¦å›å‚³é ‚ç«¯å…ƒç´ 
+    // Pop ¾Ş§@¡G²¾°£¨Ã¦^¶Ç³»ºİ¤¸¯À
     char pop() {
+        // ¦pªG°ïÅ|¤£¬°ªÅ¡A«h²¾°£³»ºİ¤¸¯À¨Ãªğ¦^¨ä­È
         if (top != nullptr) {
-            char popChar = top->data;
-            Node* temp = top;
-            top = top->next;
-            delete temp;
-            return popChar;
+            char popChar = top->data;  // ¨ú±o³»ºİ¸`ÂIªº­È
+            Node* temp = top;          //  ¼È¦s·í«e³»ºİ¸`ÂI
+            top = top->next;           // §ó·s top ¬°¤W¤@­Ó¸`ÂI
+            delete temp;               // ÄÀ©ñ­n§R°£ªº¸`ÂI
+            return popChar;            // ¦^¶Ç§R°£¸`ÂIªº­È
         }
 
+        // ¦pªG°ïÅ|¬°ªÅ¡A«h¦^¶Ç 0
         return 0;
     }
 
-    // Peek æ“ä½œï¼šå–å¾—é ‚ç«¯å…ƒç´ ä½†ä¸ç§»é™¤
+    // Peek ¾Ş§@¡G¨ú±o³»ºİ¤¸¯À¦ı¤£²¾°£
     char peek() {
-        return top->data;
+        return top->data;  // ¦^¶Ç³»ºİ¸`ÂIªº­È
     }
 
-    // åˆ¤æ–·å †ç–Šæ˜¯å¦ç‚ºç©º
+    // §PÂ_°ïÅ|¬O§_¬°ªÅ
     bool isEmpty() {
-        return top == nullptr;
+        return top == nullptr;  // ¦pªG top ¬° nullptr¡A«h°ïÅ|¬°ªÅ
     }
 };
+
+// §PÂ_¬O§_¬°¹Bºâ¤l
 bool isOperater(char ch) {
     return ch == '*' || ch == '+' || ch == '-' || ch == '/' || ch == '(';
 }
 
-// åˆ¤æ–·é‹ç®—å­(åŠ æ¸›ä¹˜é™¤) çš„å„ªå…ˆé †åº
+// §PÂ_¦b°ïÅ|¤¤ªº¹Bºâ¤lÀu¥ı¯Å
 int inStackPrecedence(char op) {
     switch (op) {
-        case 0:
-            return 10;
         case '(':
-            return 0;
+            return 8;  // '(' ªºÀu¥ı¯Å³Ì§C
         case '*':
         case '/':
             return 2;
@@ -67,10 +69,11 @@ int inStackPrecedence(char op) {
     }
 }
 
+// §PÂ_­n¥[¤Jªº¹Bºâ¤lÀu¥ı¯Å
 int inComingPrecedence(char op) {
     switch (op) {
         case '(':
-            return 8;
+            return 0;  // '(' ªºÀu¥ı¯Å³Ì§C
         case '*':
         case '/':
             return 2;
@@ -80,54 +83,54 @@ int inComingPrecedence(char op) {
     }
 }
 
-// å°‡ä¸­åºè¡¨é”å¼ (infix) è½‰æ›ç‚ºå¾Œåºè¡¨é”å¼ (postfix)
+// ±N¤¤§Çªí¹F¦¡ (infix) Âà´«¬°«á§Çªí¹F¦¡ (postfix)
 void InfixToPostfix(const char* infix, char* postfix) {
-    Stack temp;
-    int postfixIndex = 0;
+    Stack temp;            // ¨Ï¥Î Stack ¨ÓÀx¦s¹Bºâ¤l
+    int postfixIndex = 0;  // postfix arrayªº¯Á¤Ş
+
     for (int i = 0; i < 100; i++) {
+        // ¦pªG¹J¨ìµ²§ô²Å¸¹¡A±N³Ñ¾lªº¥ş³¡popªº¹Bºâ¤l¨Ãµ²§ô°j°é
         if (infix[i] == 0) {
+            // ±N³Ñ¾lªº¹Bºâ¤l¥ş³¡pop¨Ã©ñ¤Jpostfix
             while (!temp.isEmpty()) {
-                postfix[postfixIndex] = temp.pop();
-                postfixIndex++;
+                char popChar = temp.pop();        // pop¹Bºâ¤l
+                postfix[postfixIndex] = popChar;  // ©ñ¤Jpostfix
+                postfixIndex++;                   // postfix¯Á¤Ş¥[1
             }
-            break;
+            break;  // µ²§ô°j°é
         }
 
+        // ¦pªG¹J¨ì')'¡A«hpop¹Bºâ¤lª½¨ì¹J¨ì'('
         if (infix[i] == ')') {
             char popItem = temp.pop();
+            // pop¹Bºâ¤lª½¨ì¹J¨ì'('
             while (popItem != '(') {
-                postfix[postfixIndex] = popItem;
-                postfixIndex++;
-                popItem = temp.pop();
+                postfix[postfixIndex] = popItem;  // ©ñ¤Jpostfix
+                postfixIndex++;                   // postfix¯Á¤Ş¥[1
+                popItem = temp.pop();             // pop¹Bºâ¤l
             }
-        }
-
-        if (isOperater(infix[i])) {
-            if (inComingPrecedence(infix[i]) < inStackPrecedence(temp.peek())) {
-                cout << "<" << endl;
-                temp.push(infix[i]);
-            } else {
-                cout << ">=" << endl;
-                while (inComingPrecedence(infix[i]) >= inStackPrecedence(temp.peek())) {
-                    postfix[postfixIndex] = temp.pop();
-                    postfixIndex++;
-                }
-                temp.push(infix[i]);
+        } else if (isOperater(infix[i])) {  // ¦pªG¬O¹Bºâ¤l¡A«h¶i¦æÀu¥ı¯Å¤ñ¸û
+            // ¤ñ¸ûÀu¥ı¯Å¦pªG·í«e¹Bºâ¤lÀu¥ı¯Å¤j©óµ¥©ó°ïÅ|¤¤ªº¹Bºâ¤lÀu¥ı¯Å¡A«hpop¹Bºâ¤l¨Ã©ñ¤Jpostfix
+            // ª½¨ì·í«e¹Bºâ¤lÀu¥ı¯Å¤p©ó°ïÅ|¤¤ªº¹Bºâ¤lÀu¥ı¯Å©Î°ïÅ|¬°ªÅ´Npush·í«e¹Bºâ¤l
+            while (!temp.isEmpty() && inComingPrecedence(infix[i]) >= inStackPrecedence(temp.peek())) {
+                postfix[postfixIndex] = temp.pop();  // pop¹Bºâ¤l¡A©ñ¤Jpostfix
+                postfixIndex++;                      // postfix¯Á¤Ş¥[1
             }
+            temp.push(infix[i]);  // push·í«e¹Bºâ¤l
 
-        } else {
-            postfix[postfixIndex] = infix[i];
-            postfixIndex++;
+        } else {                               // ¦pªG¬O¼Æ¦r©Î¦r¥À¡A«hª½±µ©ñ¤Jpostfix
+            postfix[postfixIndex] = infix[i];  // ©ñ¤Jpostfix
+            postfixIndex++;                    // postfix¯Á¤Ş¥[1
         }
     }
 }
 
 int main() {
-    char infix[100], postfix[100];
+    char infix[100] = {0}, postfix[100] = {0};
     cout << "Enter an Infix expression: ";
-    cin >> infix;  // è¼¸å…¥ä¸­åºè¡¨é”å¼
+    cin >> infix;  // ¿é¤J¤¤§Çªí¹F¦¡
 
-    InfixToPostfix(infix, postfix);                     // è½‰æ›ç‚ºå¾Œåºè¡¨é”å¼
-    cout << "Postfix expression: " << postfix << endl;  // è¼¸å‡ºå¾Œåºè¡¨é”å¼
+    InfixToPostfix(infix, postfix);                     // Âà´«¬°«á§Çªí¹F¦¡
+    cout << "Postfix expression: " << postfix << endl;  // ¿é¥X«á§Çªí¹F¦¡
     return 0;
 }
