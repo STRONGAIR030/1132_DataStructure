@@ -65,7 +65,7 @@ string transCharToString(char ch) {
 
 // 判斷是否為運算子
 bool isOperater(char ch) {
-    return ch == '*' || ch == '+' || ch == '-' || ch == '/' || ch == '(' || ch == ')';  // 判斷是否為運算子或括號
+    return ch == '*' || ch == '+' || ch == '-' || ch == '/' || ch == '(' || ch == ')' || ch == '%' || ch == '^';  // 判斷是否為運算子或括號
 }
 
 // 判斷在堆疊中的運算子優先級
@@ -109,6 +109,9 @@ int inComingPrecedence(char op) {
 bool checkExpression(const string infix) {
     Stack temp;
     char beforeChar = ' ';
+    int leftParentheses = 0;     // 計算左括號的數量
+    int rightParentheses = 0;    // 計算右括號的數量
+    int point = 0;               // 計算小數點的數量
     if (isOperater(infix[0])) {  // 如果第一位是運算子，則檢查是否為正負號或錯誤
         if (!inComingPrecedence(infix[0]) == 3 && infix[0] != '(') {
             cout << "Error: Invalid expression" << endl;  // 錯誤提示
@@ -117,24 +120,55 @@ bool checkExpression(const string infix) {
     }
 
     for (int i = 0; i < infix.length(); beforeChar = infix[i++]) {
-        if (isOperater(infix[i]) && isOperater(beforeChar)) {  // 如果前一位是運算子，這位也是運算子，檢查是否為正負號或錯誤
-            if (inComingPrecedence(infix[i]) == inComingPrecedence(beforeChar) && inComingPrecedence(infix[i]) == 3) {
-                continue;  // 繼續迴圈
-            } else if (infix[i] != '(') {
-                cout << "Error: Invalid expression" << endl;  // 錯誤提示
-                return false;
-            }
+        if (infix[i] == '(') {
+            leftParentheses++;  // 計算左括號的數量
+        } else if (infix[i] == ')') {
+            rightParentheses++;  // 計算右括號的數量
+        } else if (infix[i] == '.') {
+            point++;  // 計算小數點的數量
         }
 
-        if (infix[i] == ')' || infix[i] == '(') {
-            if ((beforeChar == '(' && infix[i] == ')') || (beforeChar == ')' && infix[i] == '(')) {
+        if (isOperater(infix[i]) && isOperater(beforeChar)) {  // 如果前一位是運算子，這位也是運算子，檢查是否為正負號或錯誤
+            if (inComingPrecedence(infix[i]) == inComingPrecedence(beforeChar) && (inComingPrecedence(infix[i]) == 3 || infix[i] == '(' || infix[i] == ')')) {
+                continue;  // 繼續迴圈
+            } else if (infix[i] == '(' && beforeChar != ')') {
+                continue;
+            } else if (beforeChar == '(' && inComingPrecedence(infix[i]) == 3) {
+                continue;
+            } else if (beforeChar == ')' && infix[i] != '(') {
+                continue;
+            } else {
+                cout << "Error: Invalid expression" << endl;  // 錯誤提示
+                return false;                                 // 返回錯誤
+            }
+        } else if (isOperater(infix[i]) && !isOperater(beforeChar)) {
+            if (point > 1) {
+                cout << "Error: Invalid expression" << endl;  // 錯誤提示
+                return false;                                 // 返回錯誤
+            }
+            point = 0;  // 清空小數點的數量
+        } else {
+            if (i == 0) {
+                continue;
+            } else if (infix[i] != '(' && infix[i] != ')' && beforeChar != '(' && beforeChar != ')') {
+                continue;
+            } else if (beforeChar == '(' && !isOperater(infix[i])) {
+                continue;
+            } else if (!isOperater(beforeChar) && infix[i] == ')') {
+                continue;
+            } else {
                 cout << "Error: Invalid expression" << endl;  // 錯誤提示
                 return false;
             }
-
-            temp.push(infix[i]);  // push '(' 或 ')' 到 Stack
         }
     }
+
+    if (infix[infix.length() - 1] != ')' && isOperater(infix[infix.length() - 1])) {
+        cout << "Error: Invalid expression" << endl;  // 錯誤提示
+        return false;                                 // 返回錯誤
+    }
+
+    return (leftParentheses == rightParentheses) && point <= 1;  // 如果左括號和右括號的數量相等，則返回 true，否則返回 false
 }
 
 // 將中序表達式 (infix) 轉換為後序表達式 (postfix)
@@ -248,12 +282,21 @@ int main() {
     cout << "Enter an Infix expression: ";
     cin >> infix;  // 輸入中序表達式
 
-    InfixToPostfix(infix, postfix);  // 轉換為後序表達式
-    // 輸出後序表達式
-    for (int i = 0; i < postfix.size(); i++) {
-        cout << postfix[i];
+    // InfixToPostfix(infix, postfix);  // 轉換為後序表達式
+    // // 輸出後序表達式
+    // for (int i = 0; i < postfix.size(); i++) {
+    //     cout << postfix[i];(1+(2*(3+(4*(5-6)))))
+    // }
+    while (true) {
+        if (infix == "exit") {
+            break;
+        }
+
+        cout << "Checking result: " << infix << endl;
+        cout << (checkExpression(infix) ? "Valid" : "Invalid") << endl;  // 檢查表達式是否有效
+        cout << endl;
+        cin >> infix;  // 輸入中序表達式
     }
-    cout << endl;
     cin.ignore();
     cin.get();  // 等待使用者按下 Enter 鍵
     return 0;
