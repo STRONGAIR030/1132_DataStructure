@@ -66,7 +66,7 @@ class BinaryTree {
         int right_max = findMax(node->right);                                     // 找右邊最大值
         int max = (left_max > right_max) ? left_max : right_max;                  // 比較哪一邊比較大
 
-        return max;  // 輸出比較大的
+        return (max > node->value) ? max : node->value;  // 輸出比較大的
     }
 };
 
