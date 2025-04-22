@@ -3,47 +3,47 @@
 #include <vector>
 using namespace std;
 
-// æ¨¹çš„ç¯€é»
+// ¾ğªº¸`ÂI
 class TreeNode {
    public:
-    int value;        // ç¯€é»çš„å€¼
-    TreeNode* left;   // å·¦å­ç¯€é»
-    TreeNode* right;  // å³å­ç¯€é»
+    int value;        // ¸`ÂIªº­È
+    TreeNode* left;   // ¥ª¤l¸`ÂI
+    TreeNode* right;  // ¥k¤l¸`ÂI
 
-    TreeNode(int val) : value(val), left(nullptr), right(nullptr) {}  // åˆå§‹åŒ–ç¯€é»
+    TreeNode(int val) : value(val), left(nullptr), right(nullptr) {}  // ªì©l¤Æ¸`ÂI
 };
 
-// æ¨¹çµæ§‹
+// ¾ğµ²ºc
 class BinaryTree {
    public:
     TreeNode* root;
 
-    BinaryTree() : root(nullptr) {}  // åˆå§‹åŒ–æ¨¹
+    BinaryTree() : root(nullptr) {}  // ªì©l¤Æ¾ğ
 
-    // ç”¨é™£åˆ—æ§‹å»ºäºŒå…ƒæ¨¹
+    // ¥Î°}¦Cºc«Ø¤G¤¸¾ğ
     TreeNode* buildTree(vector<int>& arr) {
         if (arr.empty()) return nullptr;
 
-        queue<TreeNode*> q;           // å»ºç«‹queueå„²å­˜å¾…è™•ç†çš„ç¯€é»
-        root = new TreeNode(arr[0]);  // å»ºç«‹æ ¹ç¯€é» (é™£åˆ—ç¬¬ä¸€å€‹å…ƒç´ )
-        q.push(root);                 // å°‡æ ¹ç¯€é»åŠ å…¥queue
+        queue<TreeNode*> q;           // «Ø¥ßqueueÀx¦s«İ³B²zªº¸`ÂI
+        root = new TreeNode(arr[0]);  // «Ø¥ß®Ú¸`ÂI (°}¦C²Ä¤@­Ó¤¸¯À)
+        q.push(root);                 // ±N®Ú¸`ÂI¥[¤Jqueue
 
-        size_t i = 1;                       // é™£åˆ—ç´¢å¼•
+        size_t i = 1;                       // °}¦C¯Á¤Ş
         while (!q.empty()) {                //&& i < arr.size()
-            TreeNode* current = q.front();  // å–å‡ºqueueä¸­çš„ç¯€é»
+            TreeNode* current = q.front();  // ¨ú¥Xqueue¤¤ªº¸`ÂI
             q.pop();
 
-            // æ·»åŠ å·¦å­ç¯€é»
+            // ²K¥[¥ª¤l¸`ÂI
             if (i < arr.size()) {
                 current->left = new TreeNode(arr[i]);
-                q.push(current->left);  // å°‡å·¦å­ç¯€é»åŠ å…¥queue
+                q.push(current->left);  // ±N¥ª¤l¸`ÂI¥[¤Jqueue
                 i++;
             }
 
-            // æ·»åŠ å³å­ç¯€é»
+            // ²K¥[¥k¤l¸`ÂI
             if (i < arr.size()) {
                 current->right = new TreeNode(arr[i]);
-                q.push(current->right);  // å°‡å³å­ç¯€é»åŠ å…¥queue
+                q.push(current->right);  // ±N¥k¤l¸`ÂI¥[¤Jqueue
                 i++;
             }
         }
@@ -51,49 +51,40 @@ class BinaryTree {
         return root;
     }
 
-    // ä¸­åºéæ­·
+    // ¤¤§Ç¹M¾ú
     void inorderTraversal(TreeNode* node) {
-        if (node == nullptr) return;  // å¦‚æœç¯€é»ç‚ºç©ºï¼Œå¿½ç•¥
+        if (node == nullptr) return;  // ¦pªG¸`ÂI¬°ªÅ¡A©¿²¤
 
-        inorderTraversal(node->left);   // éæ­·å·¦å­æ¨¹
-        cout << node->value << " ";     // è¨ªå•ç•¶å‰ç¯€é»
-        inorderTraversal(node->right);  // éæ­·å³å­æ¨¹
-    }
-
-    //
-    void postorderTraversal(TreeNode* node) {
-        if (node == nullptr) return;  // å¦‚æœç¯€é»ç‚ºç©ºï¼Œå¿½ç•¥
-
-        postorderTraversal(node->left);   // éæ­·å·¦å­æ¨¹
-        postorderTraversal(node->right);  // éæ­·å³å­æ¨¹
-        cout << node->value << " ";       // è¨ªå•ç•¶å‰ç¯€é»
+        inorderTraversal(node->left);   // ¹M¾ú¥ª¤l¾ğ
+        cout << node->value << " ";     // ³X°İ·í«e¸`ÂI
+        inorderTraversal(node->right);  // ¹M¾ú¥k¤l¾ğ
     }
 
     int findMax(TreeNode* node) {
-        if (node->left == nullptr && node->right == nullptr) return node->value;  // å¦‚æœç¯€é»æ˜¯leafï¼Œå›å‚³æœ¬èº«çš„å€¼
-        int left_max = findMax(node->left);                                       // æ‰¾å·¦é‚Šæœ€å¤§å€¼
-        int right_max = findMax(node->right);                                     // æ‰¾å³é‚Šæœ€å¤§å€¼
-        int max = (left_max > right_max) ? left_max : right_max;                  // æ¯”è¼ƒå“ªä¸€é‚Šæ¯”è¼ƒå¤§
+        if (node->left == nullptr && node->right == nullptr) return node->value;  // ¦pªG¸`ÂI¬Oleaf¡A¦^¶Ç¥»¨­ªº­È
+        int left_max = findMax(node->left);                                       // §ä¥ªÃä³Ì¤j­È
+        int right_max = findMax(node->right);                                     // §ä¥kÃä³Ì¤j­È
+        int max = (left_max > right_max) ? left_max : right_max;                  // ¤ñ¸û­ş¤@Ãä¤ñ¸û¤j
 
-        return max;  // è¼¸å‡ºæ¯”è¼ƒå¤§çš„
+        return max;  // ¿é¥X¤ñ¸û¤jªº
     }
 };
 
 int main() {
-    BinaryTree tree;  // å®£å‘ŠäºŒå…ƒæ¨¹
+    BinaryTree tree;  // «Å§i¤G¤¸¾ğ
 
-    // è¼¸å…¥é™£åˆ—ç”¨æ–¼æ§‹å»ºæ¨¹ï¼ŒNULL è¡¨ç¤ºç©ºå­ç¯€é»
+    // ¿é¤J°}¦C¥Î©óºc«Ø¾ğ¡ANULL ªí¥ÜªÅ¤l¸`ÂI
     vector<int> arr = {1, 2, 3, 4, 5, 6, 7};
 
-    tree.buildTree(arr);  // å»ºç«‹æ¨¹
+    tree.buildTree(arr);  // «Ø¥ß¾ğ
 
-    // ä¸­åºéæ­·è¼¸å‡º
+    // ¤¤§Ç¹M¾ú¿é¥X
     cout << "Inorder Traversal: ";
     tree.inorderTraversal(tree.root);
     cout << endl;
 
-    cout << "æœ€å¤§å·¦å­æ¨¹æ¤: " << tree.findMax(tree.root->left) << endl;
-    cout << "æœ€å¤§å³å­æ¨¹æ¤: " << tree.findMax(tree.root->right) << endl;
+    cout << "³Ì¤j¥ª¤l¾ğ´Ó: " << tree.findMax(tree.root->left) << endl;
+    cout << "³Ì¤j¥k¤l¾ğ´Ó: " << tree.findMax(tree.root->right) << endl;
 
     return 0;
 }
