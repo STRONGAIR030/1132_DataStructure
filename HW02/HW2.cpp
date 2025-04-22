@@ -8,7 +8,7 @@ using namespace std;
 bool isOperater(char ch);
 int inStackPrecedence(char op);
 int inComingPrecedence(char op);
-void InfixToPostfix(const string infix, vector<string>* postfix);
+bool InfixToPostfix(const string infix, vector<string>& postfix);
 
 // 定義 Stack 的節點結構
 struct Node {
@@ -73,8 +73,13 @@ int inStackPrecedence(char op) {
     switch (op) {
         case '(':
             return 8;  // '(' 的優先級最低
+        case '!':
+            return 0;
+        case '^':
+            return 1;
         case '*':
         case '/':
+        case '%':
             return 2;
         case '+':
         case '-':
@@ -86,9 +91,14 @@ int inStackPrecedence(char op) {
 int inComingPrecedence(char op) {
     switch (op) {
         case '(':
-            return 0;  // '(' 的優先級最低
+            return -1;  // '(' 的優先級最低
+        case '!':
+            return 0;
+        case '^':
+            return 1;
         case '*':
         case '/':
+        case '%':
             return 2;
         case '+':
         case '-':
@@ -96,18 +106,64 @@ int inComingPrecedence(char op) {
     }
 }
 
+bool checkExpression(const string infix) {
+    Stack temp;
+    char beforeChar = ' ';
+    if (isOperater(infix[0])) {  // 如果第一位是運算子，則檢查是否為正負號或錯誤
+        if (!inComingPrecedence(infix[0]) == 3 && infix[0] != '(') {
+            cout << "Error: Invalid expression" << endl;  // 錯誤提示
+            return false;                                 // 返回錯誤
+        }
+    }
+
+    for (int i = 0; i < infix.length(); beforeChar = infix[i++]) {
+        if (isOperater(infix[i]) && isOperater(beforeChar)) {  // 如果前一位是運算子，這位也是運算子，檢查是否為正負號或錯誤
+            if (inComingPrecedence(infix[i]) == inComingPrecedence(beforeChar) && inComingPrecedence(infix[i]) == 3) {
+                continue;  // 繼續迴圈
+            } else if (infix[i] != '(') {
+                cout << "Error: Invalid expression" << endl;  // 錯誤提示
+                return false;
+            }
+        }
+
+        if (infix[i] == ')' || infix[i] == '(') {
+            if ((beforeChar == '(' && infix[i] == ')') || (beforeChar == ')' && infix[i] == '(')) {
+                cout << "Error: Invalid expression" << endl;  // 錯誤提示
+                return false;
+            }
+
+            temp.push(infix[i]);  // push '(' 或 ')' 到 Stack
+        }
+    }
+}
+
 // 將中序表達式 (infix) 轉換為後序表達式 (postfix)
-void InfixToPostfix(const string infix, vector<string>& postfix) {
+bool InfixToPostfix(const string infix, vector<string>& postfix) {
     Stack temp;              // 使用 Stack 來儲存運算子
     string numberTemp = "";  // 儲存數字或字母的暫存變數
-    char beforeChar;
+    char beforeChar = ' ';
+    string nagtiveTemp = "";  // 儲存負號的暫存變數
 
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 100; beforeChar = infix[i++]) {
         // 如果遇到結束符號，將剩餘的全部pop的運算子並結束迴圈
         if (i == infix.length()) {
             // 將剩餘的運算子全部pop並放入postfix
             if (!numberTemp.empty()) {
                 postfix.push_back(numberTemp);  // 將數字或字母加入postfix
+            }
+
+            if (!nagtiveTemp.empty()) {
+                int sub_number = 0;
+                for (int j = 0; j < nagtiveTemp.length(); j++) {
+                    if (nagtiveTemp[j] == '-') {
+                        sub_number++;
+                    }
+                }
+
+                if (sub_number % 2 == 1) {
+                    temp.push('!');  // push '-' 到 Stack
+                }
+                nagtiveTemp = "";  // 清空暫存變數
             }
 
             while (!temp.isEmpty()) {
@@ -116,9 +172,52 @@ void InfixToPostfix(const string infix, vector<string>& postfix) {
             break;  // 結束迴圈
         }
 
-        if (isOperater(infix[i]) && !isOperater(beforeChar)) {
-            postfix.push_back(numberTemp);  // 將數字或字母加入postfix
-            numberTemp = "";                // 清空暫存變數
+        // 如果第一位是運算子，則檢查是否為正負號或錯誤
+        if (isOperater(infix[i]) && i == 0) {
+            if (infix[i] == '-') {
+                nagtiveTemp += infix[i];  // 將運算子加入暫存變數
+                continue;                 // 繼續迴圈
+            } else if (infix[i] == '+') {
+                continue;  // 繼續迴圈
+            }
+        }
+
+        // 如果當前運算子是運算子，則檢查前一位是否為運算子
+        if (isOperater(infix[i]) && !isOperater(beforeChar)) {  // 如果前一位不是運算子，這位是運算子，輸出整個數字
+            if (nagtiveTemp.length() > 0) {
+                int sub_number = 0;
+                for (int j = 0; j < nagtiveTemp.length(); j++) {
+                    if (nagtiveTemp[j] == '-') {
+                        sub_number++;
+                    }
+                }
+
+                if (sub_number % 2 == 1) {
+                    temp.push('!');  // push '-' 到 Stack
+                }
+                nagtiveTemp = "";  // 清空暫存變數
+            }
+            postfix.push_back(numberTemp);                            // 將數字或字母加入postfix
+            numberTemp = "";                                          // 清空暫存變數
+        } else if (isOperater(infix[i]) && isOperater(beforeChar)) {  // 如果前一位是運算子，這位也是運算子，檢查是否為正負號或錯誤
+            if (inComingPrecedence(infix[i]) == 3) {
+                nagtiveTemp += infix[i];  // 將運算子加入暫存變數
+                continue;                 // 繼續迴圈
+            } else if (infix[i] == '(') {
+                if (nagtiveTemp.length() > 0) {
+                    int sub_number = 0;
+                    for (int j = 0; j < nagtiveTemp.length(); j++) {
+                        if (nagtiveTemp[j] == '-') {
+                            sub_number++;
+                        }
+                    }
+
+                    if (sub_number % 2 == 1) {
+                        temp.push('!');  // push '-' 到 Stack
+                    }
+                    nagtiveTemp = "";  // 清空暫存變數
+                }
+            }
         }
 
         // 如果遇到')'，則pop運算子直到遇到'('
@@ -140,7 +239,6 @@ void InfixToPostfix(const string infix, vector<string>& postfix) {
         } else {                     // 如果是數字或字母，則直接放入postfix
             numberTemp += infix[i];  // 將數字或字母加入暫存變數
         }
-        beforeChar = infix[i];  // 記錄前一個字符
     }
 }
 
