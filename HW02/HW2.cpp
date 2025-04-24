@@ -90,6 +90,19 @@ bool isLogicOperater(string str) {
     return str == "AND" || str == "OR" || str == "NOT" || str == "XOR";
 }
 
+int findLogicOperater(string str) {
+    if (str.find("AND") != string::npos) {
+        return str.find("AND");
+    } else if (str.find("XOR") != string::npos) {
+        return str.find("XOR");
+    } else if (str.find("NOT") != string::npos) {
+        return str.find("NOT");
+    } else if (str.find("OR") != string::npos) {
+        return str.find("OR");
+    }
+    return -1;  // 如果沒有找到，則返回 -1
+}
+
 bool isNumber(char ch) {
     return isdigit(ch) || ch == '.';  // 判斷是否為數字或小數點
 }
@@ -137,6 +150,7 @@ bool infixToVector(const string infix, vector<Tonken>& vector_infix) {
     string alphabetTemp = "";  // 儲存字母的暫存變數
     int point = 0;             // 計算小數點的數量
     for (int i = 0; i < infix.length(); i++) {
+        // 如果是數字
         if (isNumber(infix[i])) {
             numberTemp += infix[i];  // 將數字加入暫存變數
             if (infix[i] == '.') {
@@ -155,9 +169,13 @@ bool infixToVector(const string infix, vector<Tonken>& vector_infix) {
         }
 
         if (isalpha(infix[i])) {
-            alphabetTemp += infix[i];  // 將字母加入暫存變數
-            if (isLogicOperater(alphabetTemp)) {
-                vector_infix.emplace_back(alphabetTemp, 2);
+            alphabetTemp += infix[i];                     // 將字母加入暫存變數
+            int found = findLogicOperater(alphabetTemp);  // 判斷是否為邏輯運算子
+            if (found != -1) {
+                if (found != 0) {
+                    vector_infix.emplace_back(alphabetTemp.substr(0, found), 2);
+                }
+                vector_infix.emplace_back(alphabetTemp.substr(found), 2);  // 將字母加入向量V
                 alphabetTemp = "";
             }
         } else {
@@ -390,7 +408,7 @@ bool InfixToPostfix(const string infix, vector<string>& postfix) {
 
 int main() {
     string infix;
-    vector<Tonken> vector_infix;
+    string print_type[3] = {"數字", "變數", "運算子"};  // 儲存類型的字串陣列
     vector<string> postfix;
     cout << "Enter an Infix expression: ";
     cin >> infix;  // 輸入中序表達式
@@ -404,12 +422,12 @@ int main() {
         if (infix == "exit") {
             break;
         }
-
+        vector<Tonken> vector_infix;
         cout << "Checking result: " << infix << endl;
         if (infixToVector(infix, vector_infix)) {
             cout << "Valid" << endl;  // 如果有效，則輸出 Valid
             for (int i = 0; i < vector_infix.size(); i++) {
-                cout << "字串: " << vector_infix[i].str << ", 類型: " << vector_infix[i].type << endl;  // 輸出字串和類型
+                cout << "字串: " << vector_infix[i].str << ", 類型: " << print_type[vector_infix[i].type] << endl;  // 輸出字串和類型
             }
         } else {
             cout << "Invalid" << endl;  // 如果無效，則輸出 Invalid
