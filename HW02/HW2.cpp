@@ -146,11 +146,41 @@ bool infixToVector(const string infix, vector<Tonken>& vector_infix) {
                     return false;                                 // 返回錯誤
                 }
             }
-            if (alphabetTemp.length() > 0) {
+        } else {
+            if (!numberTemp.empty()) {
+                vector_infix.emplace_back(numberTemp, 0);  // 將數字加入向量
+                numberTemp = "";                           // 清空數字暫存變數
+                point = 0;                                 // 清空小數點的數量
+            }
+        }
+
+        if (isalpha(infix[i])) {
+            alphabetTemp += infix[i];  // 將字母加入暫存變數
+            if (isLogicOperater(alphabetTemp)) {
+                vector_infix.emplace_back(alphabetTemp, 2);
+                alphabetTemp = "";
+            }
+        } else {
+            if (!alphabetTemp.empty()) {
                 vector_infix.emplace_back(alphabetTemp, 1);  // 將字母加入向量
                 alphabetTemp = "";                           // 清空字母暫存變數
             }
+        }
 
+        if (isNormalOperater(infix[i])) {
+            vector_infix.emplace_back(infix[i], 2);  // 將運算子加入向量
+        }
+
+        if (infix[i] == '=' || infix[i] == '>' || infix[i] == '<' || infix[i] == '!') {
+            operatorTemp += infix[i];  // 將運算子加入暫存變數
+            if (operatorTemp == "!=" || operatorTemp == "==" || operatorTemp == "<=" || operatorTemp == ">=") {
+                vector_infix.emplace_back(operatorTemp, 2);  // 將運算子加入向量
+                operatorTemp = "";                           // 清空運算子暫存變數
+            } else if (operatorTemp.length() > 2) {
+                cout << "Error: Invalid expression" << endl;  // 錯誤提示
+                return false;                                 // 返回錯誤
+            }
+        } else {
             if (operatorTemp == ">" || operatorTemp == "<") {
                 vector_infix.emplace_back(operatorTemp, 2);  // 將運算子加入向量
                 operatorTemp = "";                           // 清空運算子暫存變數
@@ -158,31 +188,26 @@ bool infixToVector(const string infix, vector<Tonken>& vector_infix) {
                 cout << "Error: Invalid expression" << endl;  // 錯誤提示
                 return false;                                 // 返回錯誤
             }
-        } else {
-            if (!numberTemp.empty()) {
-                vector_infix.emplace_back(numberTemp, 0);  // 將數字加入向量
-                numberTemp = "";                           // 清空數字暫存變數
-                point = 0;                                 // 清空小數點的數量
-            }
-            if (isalpha(infix[i])) {
-                alphabetTemp += infix[i];  // 將字母加入暫存變數
-                if (isLogicOperater(alphabetTemp)) {
-                    vector_infix.emplace_back(alphabetTemp, 2);
-                    alphabetTemp = "";
-                }
-            } else if (isNormalOperater(infix[i])) {
-                vector_infix.emplace_back(infix[i], 2);  // 將運算子加入向量
-            } else {
-                operatorTemp += infix[i];  // 將運算子加入暫存變數
-                if (operatorTemp == "!=" || operatorTemp == "==" || operatorTemp == "<=" || operatorTemp == ">=") {
-                    vector_infix.emplace_back(operatorTemp, 2);  // 將運算子加入向量
-                    operatorTemp = "";                           // 清空運算子暫存變數
-                } else if (operatorTemp.length() > 2) {
-                    cout << "Error: Invalid expression" << endl;  // 錯誤提示
-                    return false;                                 // 返回錯誤
-                }
-            }
         }
+    }
+
+    if (!numberTemp.empty()) {
+        vector_infix.emplace_back(numberTemp, 0);  // 將數字加入向量
+        numberTemp = "";                           // 清空數字暫存變數
+        point = 0;                                 // 清空小數點的數量
+    }
+
+    if (!alphabetTemp.empty()) {
+        vector_infix.emplace_back(alphabetTemp, 1);  // 將字母加入向量
+        alphabetTemp = "";                           // 清空字母暫存變數
+    }
+
+    if (operatorTemp == ">" || operatorTemp == "<") {
+        vector_infix.emplace_back(operatorTemp, 2);  // 將運算子加入向量
+        operatorTemp = "";                           // 清空運算子暫存變數
+    } else if (operatorTemp.length() > 0) {
+        cout << "Error: Invalid expression" << endl;  // 錯誤提示
+        return false;                                 // 返回錯誤
     }
 }
 
