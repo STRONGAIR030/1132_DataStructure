@@ -10,6 +10,16 @@ int inStackPrecedence(char op);
 int inComingPrecedence(char op);
 bool InfixToPostfix(const string infix, vector<string>& postfix);
 
+struct Tonken {
+    string str;                                             // 儲存字串
+    int type;                                               // 儲存類型 (0: 數字, 1: 變數, 2. 運算子)
+    Tonken(string str, int type) : str(str), type(type) {}  // 初始化結構
+    Tonken(char ch, int type) : type(type) {                // 使用字符初始化結構
+        str = "";                                           // 初始化空字串
+        str += ch;                                          // 將字符加入字串
+    }  // 預設建構子
+};
+
 // 定義 Stack 的節點結構
 struct Node {
     char data;   // 存儲字符 (運算子或括號)
@@ -68,6 +78,22 @@ bool isOperater(char ch) {
     return ch == '*' || ch == '+' || ch == '-' || ch == '/' || ch == '(' || ch == ')' || ch == '%' || ch == '^';  // 判斷是否為運算子或括號
 }
 
+bool isOperater_char(char ch) {
+    return ch == '*' || ch == '+' || ch == '-' || ch == '/' || ch == '(' || ch == ')' || ch == '%' || ch == '^' || ch == '!' || ch == '<' || ch == '>' || ch == '=';  // 判斷是否為運算子或括號
+}
+
+bool isNormalOperater(char ch) {
+    return ch == '*' || ch == '+' || ch == '-' || ch == '/' || ch == '%' || ch == '^' || ch == '(' || ch == ')';  // 判斷是否為運算子或括號
+}
+
+bool isLogicOperater(string str) {
+    return str == "AND" || str == "OR" || str == "NOT" || str == "XOR";
+}
+
+bool isNumber(char ch) {
+    return isdigit(ch) || ch == '.';  // 判斷是否為數字或小數點
+}
+
 // 判斷在堆疊中的運算子優先級
 int inStackPrecedence(char op) {
     switch (op) {
@@ -92,7 +118,7 @@ int inComingPrecedence(char op) {
     switch (op) {
         case '(':
             return -1;  // '(' 的優先級最低
-        case '!':
+        case '!':       // 負號
             return 0;
         case '^':
             return 1;
@@ -105,7 +131,62 @@ int inComingPrecedence(char op) {
             return 3;
     }
 }
+bool infixToVector(const string infix, vector<Tonken>& vector_infix) {
+    string numberTemp = "";
+    string operatorTemp = "";
+    string alphabetTemp = "";  // 儲存字母的暫存變數
+    int point = 0;             // 計算小數點的數量
+    for (int i = 0; i < infix.length(); i++) {
+        if (isNumber(infix[i])) {
+            numberTemp += infix[i];  // 將數字加入暫存變數
+            if (infix[i] == '.') {
+                point++;  // 計算小數點的數量
+                if (point > 1) {
+                    cout << "Error: Invalid expression" << endl;  // 錯誤提示
+                    return false;                                 // 返回錯誤
+                }
+            }
+            if (alphabetTemp.length() > 0) {
+                vector_infix.emplace_back(alphabetTemp, 1);  // 將字母加入向量
+                alphabetTemp = "";                           // 清空字母暫存變數
+            }
 
+            if (operatorTemp == ">" || operatorTemp == "<") {
+                vector_infix.emplace_back(operatorTemp, 2);  // 將運算子加入向量
+                operatorTemp = "";                           // 清空運算子暫存變數
+            } else if (operatorTemp.length() > 0) {
+                cout << "Error: Invalid expression" << endl;  // 錯誤提示
+                return false;                                 // 返回錯誤
+            }
+        } else {
+            if (!numberTemp.empty()) {
+                vector_infix.emplace_back(numberTemp, 0);  // 將數字加入向量
+                numberTemp = "";                           // 清空數字暫存變數
+                point = 0;                                 // 清空小數點的數量
+            }
+            if (isalpha(infix[i])) {
+                alphabetTemp += infix[i];  // 將字母加入暫存變數
+                if (isLogicOperater(alphabetTemp)) {
+                    vector_infix.emplace_back(alphabetTemp, 2);
+                    alphabetTemp = "";
+                }
+            } else if (isNormalOperater(infix[i])) {
+                vector_infix.emplace_back(infix[i], 2);  // 將運算子加入向量
+            } else {
+                operatorTemp += infix[i];  // 將運算子加入暫存變數
+                if (operatorTemp == "!=" || operatorTemp == "==" || operatorTemp == "<=" || operatorTemp == ">=") {
+                    vector_infix.emplace_back(operatorTemp, 2);  // 將運算子加入向量
+                    operatorTemp = "";                           // 清空運算子暫存變數
+                } else if (operatorTemp.length() > 2) {
+                    cout << "Error: Invalid expression" << endl;  // 錯誤提示
+                    return false;                                 // 返回錯誤
+                }
+            }
+        }
+    }
+}
+
+// 檢查表達式是否有效
 bool checkExpression(const string infix) {
     Stack temp;
     char beforeChar = ' ';
@@ -276,8 +357,15 @@ bool InfixToPostfix(const string infix, vector<string>& postfix) {
     }
 }
 
+// 計算實作體醒，我會用vector<string>來儲存後序表達式。
+// 正常的運算子是如果該算子前面有兩個數字，則pop兩個數字並計算，然後push回去。
+// !負號和~反向的運算子是如果該算子前面有一個數字，則pop一個數字並計算，然後push回去。
+// 注意小數有三種情況： 1. 123.123 2. .3 = 0.3 3. 123. = 123.0 經過轉換後只會有這三種情況。
+// 測試案例可以叫gpt幫你生成。
+
 int main() {
     string infix;
+    vector<Tonken> vector_infix;
     vector<string> postfix;
     cout << "Enter an Infix expression: ";
     cin >> infix;  // 輸入中序表達式
@@ -293,7 +381,15 @@ int main() {
         }
 
         cout << "Checking result: " << infix << endl;
-        cout << (checkExpression(infix) ? "Valid" : "Invalid") << endl;  // 檢查表達式是否有效
+        if (infixToVector(infix, vector_infix)) {
+            cout << "Valid" << endl;  // 如果有效，則輸出 Valid
+            for (int i = 0; i < vector_infix.size(); i++) {
+                cout << "字串: " << vector_infix[i].str << ", 類型: " << vector_infix[i].type << endl;  // 輸出字串和類型
+            }
+        } else {
+            cout << "Invalid" << endl;  // 如果無效，則輸出 Invalid
+        }
+
         cout << endl;
         cin >> infix;  // 輸入中序表達式
     }
