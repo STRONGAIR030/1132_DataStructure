@@ -7,13 +7,13 @@
 using namespace std;
 
 struct Tonken {
-    string str;                                             // Àx¦s¦r¦ê
-    int type;                                               // Àx¦sÃş«¬ (0: ¼Æ¦r, 1: ÅÜ¼Æ, 2. ¹Bºâ¤l)
-    Tonken(string str, int type) : str(str), type(type) {}  // ªì©l¤Æµ²ºc
-    Tonken(char ch, int type) : type(type) {                // ¨Ï¥Î¦r²Åªì©l¤Æµ²ºc
-        str = "";                                           // ªì©l¤ÆªÅ¦r¦ê
-        str += ch;                                          // ±N¦r²Å¥[¤J¦r¦ê
-    }  // ¹w³]«Øºc¤l
+    string str;                                             // å„²å­˜å­—ä¸²
+    int type;                                               // å„²å­˜é¡å‹ (0: æ•¸å­—, 1: è®Šæ•¸, 2. é‹ç®—å­)
+    Tonken(string str, int type) : str(str), type(type) {}  // åˆå§‹åŒ–çµæ§‹
+    Tonken(char ch, int type) : type(type) {                // ä½¿ç”¨å­—ç¬¦åˆå§‹åŒ–çµæ§‹
+        str = "";                                           // åˆå§‹åŒ–ç©ºå­—ä¸²
+        str += ch;                                          // å°‡å­—ç¬¦åŠ å…¥å­—ä¸²
+    }  // é è¨­å»ºæ§‹å­
     Tonken(const Tonken& t) : str(t.str), type(t.type) {}
     Tonken() : str(""), type(-1) {
     }
@@ -47,59 +47,59 @@ bool isLogicOperater(string str);
 bool isCompareOperater(string str);
 float getVarialbe(string str, const vector<Variable>& variableList);
 
-// ©w¸q Stack ªº¸`ÂIµ²ºc
+// å®šç¾© Stack çš„ç¯€é»çµæ§‹
 struct Node {
-    Tonken data;  // ¦sÀx¦r²Å (¹Bºâ¤l©Î¬A¸¹)
-    Node* next;   // «ü¦V¤U¤@­Ó¸`ÂI
+    Tonken data;  // å­˜å„²å­—ç¬¦ (é‹ç®—å­æˆ–æ‹¬è™Ÿ)
+    Node* next;   // æŒ‡å‘ä¸‹ä¸€å€‹ç¯€é»
 };
 
-// ¨Ï¥Î linked list ¹ê§@ Stack
+// ä½¿ç”¨ linked list å¯¦ä½œ Stack
 class Stack {
    private:
-    Node* top;  // «ü¦V°ïÅ|³»ºİ
+    Node* top;  // æŒ‡å‘å †ç–Šé ‚ç«¯
    public:
-    Stack() { top = nullptr; }  // ªì©l¤Æ°ïÅ|
+    Stack() { top = nullptr; }  // åˆå§‹åŒ–å †ç–Š
 
-    // Push ¾Ş§@¡G±N¤¸¯À©ñ¤J°ïÅ|
+    // Push æ“ä½œï¼šå°‡å…ƒç´ æ”¾å…¥å †ç–Š
     void push(Tonken data) {
-        Node* temp = new Node;  // ³Ğ«Ø·s¸`ÂI
-        temp->data = data;      // ³]©w¸`ÂI¼Æ¾Ú
-        temp->next = top;       // ±N·s¸`ÂIªº next «ü¦V·í«eªº top
-        top = temp;             // §ó·s top ¬°·s¸`ÂI
+        Node* temp = new Node;  // å‰µå»ºæ–°ç¯€é»
+        temp->data = data;      // è¨­å®šç¯€é»æ•¸æ“š
+        temp->next = top;       // å°‡æ–°ç¯€é»çš„ next æŒ‡å‘ç•¶å‰çš„ top
+        top = temp;             // æ›´æ–° top ç‚ºæ–°ç¯€é»
     }
 
-    // Pop ¾Ş§@¡G²¾°£¨Ã¦^¶Ç³»ºİ¤¸¯À
+    // Pop æ“ä½œï¼šç§»é™¤ä¸¦å›å‚³é ‚ç«¯å…ƒç´ 
     Tonken pop() {
-        // ¦pªG°ïÅ|¤£¬°ªÅ¡A«h²¾°£³»ºİ¤¸¯À¨Ãªğ¦^¨ä­È
+        // å¦‚æœå †ç–Šä¸ç‚ºç©ºï¼Œå‰‡ç§»é™¤é ‚ç«¯å…ƒç´ ä¸¦è¿”å›å…¶å€¼
         if (top != nullptr) {
-            Tonken popToken = top->data;  // ¨ú±o³»ºİ¸`ÂIªº­È
-            Node* temp = top;             //  ¼È¦s·í«e³»ºİ¸`ÂI
-            top = top->next;              // §ó·s top ¬°¤W¤@­Ó¸`ÂI
-            delete temp;                  // ÄÀ©ñ­n§R°£ªº¸`ÂI
-            return popToken;              // ¦^¶Ç§R°£¸`ÂIªº­È
+            Tonken popToken = top->data;  // å–å¾—é ‚ç«¯ç¯€é»çš„å€¼
+            Node* temp = top;             //  æš«å­˜ç•¶å‰é ‚ç«¯ç¯€é»
+            top = top->next;              // æ›´æ–° top ç‚ºä¸Šä¸€å€‹ç¯€é»
+            delete temp;                  // é‡‹æ”¾è¦åˆªé™¤çš„ç¯€é»
+            return popToken;              // å›å‚³åˆªé™¤ç¯€é»çš„å€¼
         }
 
-        // ¦pªG°ïÅ|¬°ªÅ¡A«h¦^¶Ç 0
+        // å¦‚æœå †ç–Šç‚ºç©ºï¼Œå‰‡å›å‚³ 0
         return Tonken(" ", -1);
     }
 
-    // Peek ¾Ş§@¡G¨ú±o³»ºİ¤¸¯À¦ı¤£²¾°£
+    // Peek æ“ä½œï¼šå–å¾—é ‚ç«¯å…ƒç´ ä½†ä¸ç§»é™¤
     Tonken peek() {
-        return top->data;  // ¦^¶Ç³»ºİ¸`ÂIªº­È
+        return top->data;  // å›å‚³é ‚ç«¯ç¯€é»çš„å€¼
     }
 
-    // §PÂ_°ïÅ|¬O§_¬°ªÅ
+    // åˆ¤æ–·å †ç–Šæ˜¯å¦ç‚ºç©º
     bool isEmpty() {
-        return top == nullptr;  // ¦pªG top ¬° nullptr¡A«h°ïÅ|¬°ªÅ
+        return top == nullptr;  // å¦‚æœ top ç‚º nullptrï¼Œå‰‡å †ç–Šç‚ºç©º
     }
 };
 
 int enterInt() {
     string str;
-    getline(cin, str);  // Åª¨ú¾ã¦æ¿é¤J
+    getline(cin, str);  // è®€å–æ•´è¡Œè¼¸å…¥
 
     try {
-        return stoi(str);  // ¹Á¸Õ±N¦r¦êÂà´«¬°¾ã¼Æ
+        return stoi(str);  // å˜—è©¦å°‡å­—ä¸²è½‰æ›ç‚ºæ•´æ•¸
     } catch (...) {
         return -1;
     }
@@ -107,36 +107,36 @@ int enterInt() {
 
 float enterFloat() {
     string str;
-    getline(cin, str);  // Åª¨ú¾ã¦æ¿é¤J
+    getline(cin, str);  // è®€å–æ•´è¡Œè¼¸å…¥
 
     try {
-        return stof(str);  // ¹Á¸Õ±N¦r¦êÂà´«¬°¯BÂI¼Æ
+        return stof(str);  // å˜—è©¦å°‡å­—ä¸²è½‰æ›ç‚ºæµ®é»æ•¸
     } catch (...) {
         return NAN;
     }
 }
 
 string transCharToString(char ch) {
-    string str = "";  // ªì©l¤ÆªÅ¦r¦ê
-    str += ch;        // ±N¦r²Å¥[¤J¦r¦ê
-    return str;       // ¦^¶Ç¦r¦ê
+    string str = "";  // åˆå§‹åŒ–ç©ºå­—ä¸²
+    str += ch;        // å°‡å­—ç¬¦åŠ å…¥å­—ä¸²
+    return str;       // å›å‚³å­—ä¸²
 }
 
-// §PÂ_¬O§_¬°¹Bºâ¤l
+// åˆ¤æ–·æ˜¯å¦ç‚ºé‹ç®—å­
 bool isOperater(char ch) {
-    return ch == '*' || ch == '+' || ch == '-' || ch == '/' || ch == '(' || ch == ')' || ch == '%' || ch == '^';  // §PÂ_¬O§_¬°¹Bºâ¤l©Î¬A¸¹
+    return ch == '*' || ch == '+' || ch == '-' || ch == '/' || ch == '(' || ch == ')' || ch == '%' || ch == '^';  // åˆ¤æ–·æ˜¯å¦ç‚ºé‹ç®—å­æˆ–æ‹¬è™Ÿ
 }
 
 bool isOperater(string str) {
-    return isNormalOperater(str) || isCompareOperater(str) || isLogicOperater(str);  // §PÂ_¬O§_¬°¹Bºâ¤l©Î¬A¸¹
+    return isNormalOperater(str) || isCompareOperater(str) || isLogicOperater(str);  // åˆ¤æ–·æ˜¯å¦ç‚ºé‹ç®—å­æˆ–æ‹¬è™Ÿ
 }
 
 bool isNormalOperater(char ch) {
-    return ch == '*' || ch == '+' || ch == '-' || ch == '/' || ch == '%' || ch == '^' || ch == '(' || ch == ')';  // §PÂ_¬O§_¬°¹Bºâ¤l©Î¬A¸¹
+    return ch == '*' || ch == '+' || ch == '-' || ch == '/' || ch == '%' || ch == '^' || ch == '(' || ch == ')';  // åˆ¤æ–·æ˜¯å¦ç‚ºé‹ç®—å­æˆ–æ‹¬è™Ÿ
 }
 
 bool isNormalOperater(string str) {
-    return str == "*" || str == "+" || str == "-" || str == "/" || str == "%" || str == "^" || str == "(" || str == ")";  // §PÂ_¬O§_¬°¹Bºâ¤l©Î¬A¸¹
+    return str == "*" || str == "+" || str == "-" || str == "/" || str == "%" || str == "^" || str == "(" || str == ")";  // åˆ¤æ–·æ˜¯å¦ç‚ºé‹ç®—å­æˆ–æ‹¬è™Ÿ
 }
 
 bool isLogicOperater(string str) {
@@ -144,7 +144,7 @@ bool isLogicOperater(string str) {
 }
 
 bool isCompareOperater(string str) {
-    return str == "==" || str == "!=" || str == "<" || str == "<=" || str == ">" || str == ">=";  // §PÂ_¬O§_¬°¤ñ¸û¹Bºâ¤l
+    return str == "==" || str == "!=" || str == "<" || str == "<=" || str == ">" || str == ">=";  // åˆ¤æ–·æ˜¯å¦ç‚ºæ¯”è¼ƒé‹ç®—å­
 }
 
 int findLogicOperater(string str) {
@@ -157,17 +157,17 @@ int findLogicOperater(string str) {
     } else if (str.find("OR") != string::npos) {
         return str.find("OR");
     }
-    return -1;  // ¦pªG¨S¦³§ä¨ì¡A«hªğ¦^ -1
+    return -1;  // å¦‚æœæ²’æœ‰æ‰¾åˆ°ï¼Œå‰‡è¿”å› -1
 }
 
 bool isNumber(char ch) {
-    return isdigit(ch) || ch == '.';  // §PÂ_¬O§_¬°¼Æ¦r©Î¤p¼ÆÂI
+    return isdigit(ch) || ch == '.';  // åˆ¤æ–·æ˜¯å¦ç‚ºæ•¸å­—æˆ–å°æ•¸é»
 }
 
-// §PÂ_¦b°ïÅ|¤¤ªº¹Bºâ¤lÀu¥ı¯Å
+// åˆ¤æ–·åœ¨å †ç–Šä¸­çš„é‹ç®—å­å„ªå…ˆç´š
 int inStackPrecedence(string op) {
     if (op == "(") {
-        return 8;  // '(' ªºÀu¥ı¯Å³Ì§C
+        return 8;  // '(' çš„å„ªå…ˆç´šæœ€ä½
     } else if (op == "!") {
         return 0;
     } else if (op == "^") {
@@ -185,10 +185,10 @@ int inStackPrecedence(string op) {
     }
 }
 
-// §PÂ_­n¥[¤Jªº¹Bºâ¤lÀu¥ı¯Å
+// åˆ¤æ–·è¦åŠ å…¥çš„é‹ç®—å­å„ªå…ˆç´š
 int inComingPrecedence(string op) {
     if (op == "(") {
-        return -1;  // '(' ªºÀu¥ı¯Å³Ì§C
+        return -1;  // '(' çš„å„ªå…ˆç´šæœ€ä½
     } else if (op == "!") {
         return 0;
     } else if (op == "^") {
@@ -209,7 +209,7 @@ int inComingPrecedence(string op) {
 float getVarialbe(string str, const vector<Variable>& variableList) {
     for (int i = 0; i < variableList.size(); i++) {
         if (variableList[i].name == str) {
-            return variableList[i].value;  // ¦pªG§ä¨ìÅÜ¼Æ¡A«hªğ¦^¨ä­È
+            return variableList[i].value;  // å¦‚æœæ‰¾åˆ°è®Šæ•¸ï¼Œå‰‡è¿”å›å…¶å€¼
         }
     }
     return NAN;
@@ -218,54 +218,54 @@ float getVarialbe(string str, const vector<Variable>& variableList) {
 bool infixToVector(const string infix, vector<Tonken>& vector_infix, const vector<Variable>& variableList) {
     string numberTemp = "";
     string operatorTemp = "";
-    string alphabetTemp = "";  // Àx¦s¦r¥Àªº¼È¦sÅÜ¼Æ
-    int point = 0;             // ­pºâ¤p¼ÆÂIªº¼Æ¶q
+    string alphabetTemp = "";  // å„²å­˜å­—æ¯çš„æš«å­˜è®Šæ•¸
+    int point = 0;             // è¨ˆç®—å°æ•¸é»çš„æ•¸é‡
     for (int i = 0; i < infix.length(); i++) {
-        // ¦pªG¬O¼Æ¦r
+        // å¦‚æœæ˜¯æ•¸å­—
         if (!isNumber(infix[i])) {
             if (!numberTemp.empty()) {
-                vector_infix.emplace_back(numberTemp, 0);  // ±N¼Æ¦r¥[¤J¦V¶q
-                numberTemp = "";                           // ²MªÅ¼Æ¦r¼È¦sÅÜ¼Æ
-                point = 0;                                 // ²MªÅ¤p¼ÆÂIªº¼Æ¶q
+                vector_infix.emplace_back(numberTemp, 0);  // å°‡æ•¸å­—åŠ å…¥å‘é‡
+                numberTemp = "";                           // æ¸…ç©ºæ•¸å­—æš«å­˜è®Šæ•¸
+                point = 0;                                 // æ¸…ç©ºå°æ•¸é»çš„æ•¸é‡
             }
         }
 
         if (!isalpha(infix[i])) {
             if (!alphabetTemp.empty()) {
                 if (!isnan(getVarialbe(alphabetTemp, variableList))) {
-                    vector_infix.emplace_back(alphabetTemp, 1);  // ±N¦r¥À¥[¤J¦V¶q
-                    alphabetTemp = "";                           // ²MªÅ¦r¥À¼È¦sÅÜ¼Æ
+                    vector_infix.emplace_back(alphabetTemp, 1);  // å°‡å­—æ¯åŠ å…¥å‘é‡
+                    alphabetTemp = "";                           // æ¸…ç©ºå­—æ¯æš«å­˜è®Šæ•¸
                 } else {
-                    cout << "Invalid variable: " << alphabetTemp << endl;  // ¿ù»~´£¥Ü
-                    return false;                                          // ªğ¦^¿ù»~
+                    cout << "Invalid variable: " << alphabetTemp << endl;  // éŒ¯èª¤æç¤º
+                    return false;                                          // è¿”å›éŒ¯èª¤
                 }
             }
         }
 
         if (!(infix[i] == '=' || infix[i] == '>' || infix[i] == '<' || infix[i] == '!')) {
             if (operatorTemp == ">" || operatorTemp == "<") {
-                vector_infix.emplace_back(operatorTemp, 2);  // ±N¹Bºâ¤l¥[¤J¦V¶q
-                operatorTemp = "";                           // ²MªÅ¹Bºâ¤l¼È¦sÅÜ¼Æ
+                vector_infix.emplace_back(operatorTemp, 2);  // å°‡é‹ç®—å­åŠ å…¥å‘é‡
+                operatorTemp = "";                           // æ¸…ç©ºé‹ç®—å­æš«å­˜è®Šæ•¸
             } else if (operatorTemp.length() > 0) {
-                cout << "Invalid operater: " << operatorTemp << endl;  // ¿ù»~´£¥Ü
-                return false;                                          // ªğ¦^¿ù»~
+                cout << "Invalid operater: " << operatorTemp << endl;  // éŒ¯èª¤æç¤º
+                return false;                                          // è¿”å›éŒ¯èª¤
             }
         }
 
         if (isNumber(infix[i])) {
-            numberTemp += infix[i];  // ±N¼Æ¦r¥[¤J¼È¦sÅÜ¼Æ
+            numberTemp += infix[i];  // å°‡æ•¸å­—åŠ å…¥æš«å­˜è®Šæ•¸
             if (infix[i] == '.') {
-                point++;  // ­pºâ¤p¼ÆÂIªº¼Æ¶q
+                point++;  // è¨ˆç®—å°æ•¸é»çš„æ•¸é‡
                 if (point > 1) {
-                    cout << "Too much point" << endl;  // ¿ù»~´£¥Ü
-                    return false;                      // ªğ¦^¿ù»~
+                    cout << "Too much point" << endl;  // éŒ¯èª¤æç¤º
+                    return false;                      // è¿”å›éŒ¯èª¤
                 }
             }
         }
 
         if (isalpha(infix[i])) {
-            alphabetTemp += infix[i];                     // ±N¦r¥À¥[¤J¼È¦sÅÜ¼Æ
-            int found = findLogicOperater(alphabetTemp);  // §PÂ_¬O§_¬°ÅŞ¿è¹Bºâ¤l
+            alphabetTemp += infix[i];                     // å°‡å­—æ¯åŠ å…¥æš«å­˜è®Šæ•¸
+            int found = findLogicOperater(alphabetTemp);  // åˆ¤æ–·æ˜¯å¦ç‚ºé‚è¼¯é‹ç®—å­
             if (found != -1) {
                 if (found != 0) {
                     string var = alphabetTemp.substr(0, found);
@@ -275,31 +275,31 @@ bool infixToVector(const string infix, vector<Tonken>& vector_infix, const vecto
                     }
                     vector_infix.emplace_back(var, 1);
                 }
-                vector_infix.emplace_back(alphabetTemp.substr(found), 2);  // ±N¦r¥À¥[¤J¦V¶qV
+                vector_infix.emplace_back(alphabetTemp.substr(found), 2);  // å°‡å­—æ¯åŠ å…¥å‘é‡V
                 alphabetTemp = "";
             }
         }
 
         if (isNormalOperater(infix[i])) {
-            vector_infix.emplace_back(infix[i], 2);  // ±N¹Bºâ¤l¥[¤J¦V¶q
+            vector_infix.emplace_back(infix[i], 2);  // å°‡é‹ç®—å­åŠ å…¥å‘é‡
         }
 
         if (infix[i] == '=' || infix[i] == '>' || infix[i] == '<' || infix[i] == '!') {
-            operatorTemp += infix[i];  // ±N¹Bºâ¤l¥[¤J¼È¦sÅÜ¼Æ
+            operatorTemp += infix[i];  // å°‡é‹ç®—å­åŠ å…¥æš«å­˜è®Šæ•¸
             if (operatorTemp == "!=" || operatorTemp == "==" || operatorTemp == "<=" || operatorTemp == ">=") {
-                vector_infix.emplace_back(operatorTemp, 2);  // ±N¹Bºâ¤l¥[¤J¦V¶q
-                operatorTemp = "";                           // ²MªÅ¹Bºâ¤l¼È¦sÅÜ¼Æ
+                vector_infix.emplace_back(operatorTemp, 2);  // å°‡é‹ç®—å­åŠ å…¥å‘é‡
+                operatorTemp = "";                           // æ¸…ç©ºé‹ç®—å­æš«å­˜è®Šæ•¸
             } else if (operatorTemp.length() > 2) {
-                cout << "Invalid operater: " << operatorTemp << endl;  // ¿ù»~´£¥Ü
-                return false;                                          // ªğ¦^¿ù»~
+                cout << "Invalid operater: " << operatorTemp << endl;  // éŒ¯èª¤æç¤º
+                return false;                                          // è¿”å›éŒ¯èª¤
             }
         }
     }
 
     if (!numberTemp.empty()) {
-        vector_infix.emplace_back(numberTemp, 0);  // ±N¼Æ¦r¥[¤J¦V¶q
-        numberTemp = "";                           // ²MªÅ¼Æ¦r¼È¦sÅÜ¼Æ
-        point = 0;                                 // ²MªÅ¤p¼ÆÂIªº¼Æ¶q
+        vector_infix.emplace_back(numberTemp, 0);  // å°‡æ•¸å­—åŠ å…¥å‘é‡
+        numberTemp = "";                           // æ¸…ç©ºæ•¸å­—æš«å­˜è®Šæ•¸
+        point = 0;                                 // æ¸…ç©ºå°æ•¸é»çš„æ•¸é‡
     }
 
     if (!alphabetTemp.empty()) {
@@ -307,39 +307,39 @@ bool infixToVector(const string infix, vector<Tonken>& vector_infix, const vecto
             cout << "Invalid variable: " << alphabetTemp << endl;
             return false;
         }
-        vector_infix.emplace_back(alphabetTemp, 1);  // ±N¦r¥À¥[¤J¦V¶q
-        alphabetTemp = "";                           // ²MªÅ¦r¥À¼È¦sÅÜ¼Æ
+        vector_infix.emplace_back(alphabetTemp, 1);  // å°‡å­—æ¯åŠ å…¥å‘é‡
+        alphabetTemp = "";                           // æ¸…ç©ºå­—æ¯æš«å­˜è®Šæ•¸
     }
 
     if (operatorTemp == ">" || operatorTemp == "<") {
-        vector_infix.emplace_back(operatorTemp, 2);  // ±N¹Bºâ¤l¥[¤J¦V¶q
-        operatorTemp = "";                           // ²MªÅ¹Bºâ¤l¼È¦sÅÜ¼Æ
+        vector_infix.emplace_back(operatorTemp, 2);  // å°‡é‹ç®—å­åŠ å…¥å‘é‡
+        operatorTemp = "";                           // æ¸…ç©ºé‹ç®—å­æš«å­˜è®Šæ•¸
     } else if (operatorTemp.length() > 0) {
-        cout << "Invalid operater: " << operatorTemp << endl;  // ¿ù»~´£¥Ü
-        return false;                                          // ªğ¦^¿ù»~
+        cout << "Invalid operater: " << operatorTemp << endl;  // éŒ¯èª¤æç¤º
+        return false;                                          // è¿”å›éŒ¯èª¤
     }
 }
 
-// ÀË¬dªí¹F¦¡¬O§_¦³®Ä
+// æª¢æŸ¥è¡¨é”å¼æ˜¯å¦æœ‰æ•ˆ
 bool checkExpression(const vector<Tonken>& infix) {
     Stack temp;
-    int leftParentheses = 0;   // ­pºâ¥ª¬A¸¹ªº¼Æ¶q
-    int rightParentheses = 0;  // ­pºâ¥k¬A¸¹ªº¼Æ¶q
-    if (infix[0].type == 2) {  // ¦pªG²Ä¤@¦ì¬O¹Bºâ¤l¡A«hÀË¬d¬O§_¬°¥¿­t¸¹©Î¿ù»~
+    int leftParentheses = 0;   // è¨ˆç®—å·¦æ‹¬è™Ÿçš„æ•¸é‡
+    int rightParentheses = 0;  // è¨ˆç®—å³æ‹¬è™Ÿçš„æ•¸é‡
+    if (infix[0].type == 2) {  // å¦‚æœç¬¬ä¸€ä½æ˜¯é‹ç®—å­ï¼Œå‰‡æª¢æŸ¥æ˜¯å¦ç‚ºæ­£è² è™Ÿæˆ–éŒ¯èª¤
         if (inComingPrecedence(infix[0].str) != 3 && infix[0].str != "(" && infix[0].str != "NOT") {
-            cout << "Invalid expression: first char invalid" << endl;  // ¿ù»~´£¥Ü
-            return false;                                              // ªğ¦^¿ù»~
+            cout << "Invalid expression: first char invalid" << endl;  // éŒ¯èª¤æç¤º
+            return false;                                              // è¿”å›éŒ¯èª¤
         }
     }
 
     for (int i = 0; i < infix.size(); i++) {
         if (infix[i].str == "(") {
-            leftParentheses++;  // ­pºâ¥ª¬A¸¹ªº¼Æ¶q
+            leftParentheses++;  // è¨ˆç®—å·¦æ‹¬è™Ÿçš„æ•¸é‡
         } else if (infix[i].str == ")") {
-            rightParentheses++;  // ­pºâ¥k¬A¸¹ªº¼Æ¶q
+            rightParentheses++;  // è¨ˆç®—å³æ‹¬è™Ÿçš„æ•¸é‡
         }
 
-        if (infix[i].type == 2 && infix[i - 1].type == 2) {  // ¦pªG«e¤@¦ì¬O¹Bºâ¤l¡A³o¦ì¤]¬O¹Bºâ¤l¡AÀË¬d¬O§_¬°¥¿­t¸¹©Î¿ù»~
+        if (infix[i].type == 2 && infix[i - 1].type == 2) {  // å¦‚æœå‰ä¸€ä½æ˜¯é‹ç®—å­ï¼Œé€™ä½ä¹Ÿæ˜¯é‹ç®—å­ï¼Œæª¢æŸ¥æ˜¯å¦ç‚ºæ­£è² è™Ÿæˆ–éŒ¯èª¤
             if (infix[i].str == "(" && infix[i - 1].str != ")") {
                 continue;
             } else if (infix[i - 1].str == "(" && inComingPrecedence(infix[i].str) == 3) {
@@ -349,8 +349,8 @@ bool checkExpression(const vector<Tonken>& infix) {
             } else if (infix[i].str == "NOT" || infix[i].str == "+" || infix[i].str == "-") {
                 continue;
             } else {
-                cout << "Invalid expression: operater error" << endl;  // ¿ù»~´£¥Ü
-                return false;                                          // ªğ¦^¿ù»~
+                cout << "Invalid expression: operater error" << endl;  // éŒ¯èª¤æç¤º
+                return false;                                          // è¿”å›éŒ¯èª¤
             }
         } else {
             if (i == 0) {
@@ -362,173 +362,173 @@ bool checkExpression(const vector<Tonken>& infix) {
             } else if (infix[i - 1].type != 2 && infix[i].str == ")") {
                 continue;
             } else {
-                cout << "Invalid expression: operater error" << endl;  // ¿ù»~´£¥Ü
+                cout << "Invalid expression: operater error" << endl;  // éŒ¯èª¤æç¤º
                 return false;
             }
         }
     }
 
     if (infix[infix.size() - 1].str != ")" && infix[infix.size() - 1].type == 2) {
-        cout << "Invalid expression: last char invalid" << endl;  // ¿ù»~´£¥Ü
-        return false;                                             // ªğ¦^¿ù»~
+        cout << "Invalid expression: last char invalid" << endl;  // éŒ¯èª¤æç¤º
+        return false;                                             // è¿”å›éŒ¯èª¤
     }
 
-    return (leftParentheses == rightParentheses);  // ¦pªG¥ª¬A¸¹©M¥k¬A¸¹ªº¼Æ¶q¬Ûµ¥¡A«hªğ¦^ true¡A§_«hªğ¦^ false
+    return (leftParentheses == rightParentheses);  // å¦‚æœå·¦æ‹¬è™Ÿå’Œå³æ‹¬è™Ÿçš„æ•¸é‡ç›¸ç­‰ï¼Œå‰‡è¿”å› trueï¼Œå¦å‰‡è¿”å› false
 }
 
-// ±N¤¤§Çªí¹F¦¡ (infix) Âà´«¬°«á§Çªí¹F¦¡ (postfix)
+// å°‡ä¸­åºè¡¨é”å¼ (infix) è½‰æ›ç‚ºå¾Œåºè¡¨é”å¼ (postfix)
 void InfixToPostfix(const vector<Tonken>& infix, vector<Tonken>& postfix) {
-    Stack temp;  // ¨Ï¥Î Stack ¨ÓÀx¦s¹Bºâ¤l
+    Stack temp;  // ä½¿ç”¨ Stack ä¾†å„²å­˜é‹ç®—å­
     int i = 0;
     if (infix[0].str == "-" || infix[0].str == "+") {
-        int navtiveTemp = 0;  // ­pºâ­t¸¹ªº¼Æ¶q
+        int navtiveTemp = 0;  // è¨ˆç®—è² è™Ÿçš„æ•¸é‡
         while (i < infix.size() && (infix[i].str == "+" || infix[i].str == "-")) {
             if (infix[i].str == "-") {
-                navtiveTemp++;  // ­pºâ­t¸¹ªº¼Æ¶q
+                navtiveTemp++;  // è¨ˆç®—è² è™Ÿçš„æ•¸é‡
             }
             i++;
         }
         if (navtiveTemp % 2 == 1) {
-            temp.push(Tonken('!', 2));  // push '-' ¨ì Stack
+            temp.push(Tonken('!', 2));  // push '-' åˆ° Stack
         }
     }
 
     for (; i < infix.size(); i++) {
-        // ¦pªG²Ä¤@¦ì¬O¹Bºâ¤l¡A«hÀË¬d¬O§_¬°¥¿­t¸¹©Î¿ù»~
+        // å¦‚æœç¬¬ä¸€ä½æ˜¯é‹ç®—å­ï¼Œå‰‡æª¢æŸ¥æ˜¯å¦ç‚ºæ­£è² è™Ÿæˆ–éŒ¯èª¤
 
         if (infix[i].type == 2 && infix[i - 1].type == 2 && inComingPrecedence(infix[i].str) == 3 && infix[i - 1].str != ")") {
-            int navtiveTemp = 0;  // ­pºâ­t¸¹ªº¼Æ¶q
+            int navtiveTemp = 0;  // è¨ˆç®—è² è™Ÿçš„æ•¸é‡
             while (i < infix.size() && (infix[i].str == "+" || infix[i].str == "-")) {
                 if (infix[i].str == "-") {
-                    navtiveTemp++;  // ­pºâ­t¸¹ªº¼Æ¶q
+                    navtiveTemp++;  // è¨ˆç®—è² è™Ÿçš„æ•¸é‡
                 }
                 i++;
             }
             if (navtiveTemp % 2 == 1) {
-                temp.push(Tonken('!', 2));  // push '-' ¨ì Stack
+                temp.push(Tonken('!', 2));  // push '-' åˆ° Stack
             }
             i--;
             continue;
         }
 
-        // ¦pªG¹J¨ì')'¡A«hpop¹Bºâ¤lª½¨ì¹J¨ì'('
+        // å¦‚æœé‡åˆ°')'ï¼Œå‰‡popé‹ç®—å­ç›´åˆ°é‡åˆ°'('
         if (infix[i].str == ")") {
-            Tonken popItem = temp.pop();  // pop¹Bºâ¤l
-            // pop¹Bºâ¤lª½¨ì¹J¨ì'('
+            Tonken popItem = temp.pop();  // popé‹ç®—å­
+            // popé‹ç®—å­ç›´åˆ°é‡åˆ°'('
             while (popItem.str != "(") {
-                postfix.push_back(popItem);  // ©ñ¤Jpostfix
-                popItem = temp.pop();        // pop¹Bºâ¤l
+                postfix.push_back(popItem);  // æ”¾å…¥postfix
+                popItem = temp.pop();        // popé‹ç®—å­
             }
-        } else if (infix[i].type == 2) {  // ¦pªG¬O¹Bºâ¤l¡A«h¶i¦æÀu¥ı¯Å¤ñ¸û
-            // ¤ñ¸ûÀu¥ı¯Å¦pªG·í«e¹Bºâ¤lÀu¥ı¯Å¤j©óµ¥©ó°ïÅ|¤¤ªº¹Bºâ¤lÀu¥ı¯Å¡A«hpop¹Bºâ¤l¨Ã©ñ¤Jpostfix
-            // ª½¨ì·í«e¹Bºâ¤lÀu¥ı¯Å¤p©ó°ïÅ|¤¤ªº¹Bºâ¤lÀu¥ı¯Å©Î°ïÅ|¬°ªÅ´Npush·í«e¹Bºâ¤l
+        } else if (infix[i].type == 2) {  // å¦‚æœæ˜¯é‹ç®—å­ï¼Œå‰‡é€²è¡Œå„ªå…ˆç´šæ¯”è¼ƒ
+            // æ¯”è¼ƒå„ªå…ˆç´šå¦‚æœç•¶å‰é‹ç®—å­å„ªå…ˆç´šå¤§æ–¼ç­‰æ–¼å †ç–Šä¸­çš„é‹ç®—å­å„ªå…ˆç´šï¼Œå‰‡popé‹ç®—å­ä¸¦æ”¾å…¥postfix
+            // ç›´åˆ°ç•¶å‰é‹ç®—å­å„ªå…ˆç´šå°æ–¼å †ç–Šä¸­çš„é‹ç®—å­å„ªå…ˆç´šæˆ–å †ç–Šç‚ºç©ºå°±pushç•¶å‰é‹ç®—å­
             while (!temp.isEmpty() && inComingPrecedence(infix[i].str) >= inStackPrecedence(temp.peek().str)) {
-                postfix.push_back(temp.pop());  // pop¹Bºâ¤l¨Ã©ñ¤Jpostfix
+                postfix.push_back(temp.pop());  // popé‹ç®—å­ä¸¦æ”¾å…¥postfix
             }
-            temp.push(infix[i]);  // push·í«e¹Bºâ¤l
+            temp.push(infix[i]);  // pushç•¶å‰é‹ç®—å­
         } else {
-            postfix.push_back(infix[i]);  // ¦pªG¬O¼Æ¦r©ÎÅÜ¼Æ¡A«h©ñ¤Jpostfix
+            postfix.push_back(infix[i]);  // å¦‚æœæ˜¯æ•¸å­—æˆ–è®Šæ•¸ï¼Œå‰‡æ”¾å…¥postfix
         }
     }
 
     while (!temp.isEmpty()) {
-        postfix.push_back(temp.pop());  // ©ñ¤Jpostfix
+        postfix.push_back(temp.pop());  // æ”¾å…¥postfix
     }
 }
 
 void enterVar(vector<Variable>& variableList) {
     cout << "Enter a variable name(only alpha and not include AND, OR, NOT, XOR): ";
     string name;
-    getline(cin, name);  // ¿é¤JÅÜ¼Æ¦WºÙ
+    getline(cin, name);  // è¼¸å…¥è®Šæ•¸åç¨±
     for (int i = 0; i < variableList.size(); i++) {
         if (variableList[i].name == name) {
-            cout << "Error: Variable name already exists" << endl;  // ¿ù»~´£¥Ü
+            cout << "Error: Variable name already exists" << endl;  // éŒ¯èª¤æç¤º
             return;
         }
     }
     cout << "Enter a variable value(float): ";
-    float value = enterFloat();  // ¿é¤JÅÜ¼Æ­È
+    float value = enterFloat();  // è¼¸å…¥è®Šæ•¸å€¼
     while (isnan(value)) {
-        cout << "Error: Invalid value, Try again: ";  // ¿ù»~´£¥Ü
-        value = enterFloat();                         // ¿é¤JÅÜ¼Æ­È
+        cout << "Error: Invalid value, Try again: ";  // éŒ¯èª¤æç¤º
+        value = enterFloat();                         // è¼¸å…¥è®Šæ•¸å€¼
     }
-    variableList.emplace_back(name, value);  // ±NÅÜ¼Æ¥[¤JÅÜ¼Æ¦Cªí
+    variableList.emplace_back(name, value);  // å°‡è®Šæ•¸åŠ å…¥è®Šæ•¸åˆ—è¡¨
 }
 
 void editVar(vector<Variable>& variableList) {
     if (variableList.empty()) {
-        cout << "Error: No variable to edit" << endl;  // ¿ù»~´£¥Ü
-        cout << "Press Enter to continue..." << endl;  // ´£¥Ü«ö¤U Enter ÁäÄ~Äò
-        cin.get();                                     // µ¥«İ¨Ï¥ÎªÌ«ö¤U Enter Áä
+        cout << "Error: No variable to edit" << endl;  // éŒ¯èª¤æç¤º
+        cout << "Press Enter to continue..." << endl;  // æç¤ºæŒ‰ä¸‹ Enter éµç¹¼çºŒ
+        cin.get();                                     // ç­‰å¾…ä½¿ç”¨è€…æŒ‰ä¸‹ Enter éµ
         return;
     }
 
     for (int i = 0; i < variableList.size(); i++) {
-        cout << i << ". " << variableList[i].name << " == " << variableList[i].value << endl;  // ¿é¥XÅÜ¼Æ¦WºÙ
+        cout << i << ". " << variableList[i].name << " == " << variableList[i].value << endl;  // è¼¸å‡ºè®Šæ•¸åç¨±
     }
 
     int choose = -1;
-    cout << "choose variable: ";  // ´£¥Ü¿ï¾ÜÅÜ¼Æ
-    choose = enterInt();          // ¿é¤J¿ï¾ÜªºÅÜ¼Æ
+    cout << "choose variable: ";  // æç¤ºé¸æ“‡è®Šæ•¸
+    choose = enterInt();          // è¼¸å…¥é¸æ“‡çš„è®Šæ•¸
     while (choose < 0 || choose >= variableList.size()) {
-        cout << "Error: Invalid choice, Try again: ";  // ¿ù»~´£¥Ü
-        choose = enterInt();                           // ¿é¤J¿ï¾ÜªºÅÜ¼Æ
+        cout << "Error: Invalid choice, Try again: ";  // éŒ¯èª¤æç¤º
+        choose = enterInt();                           // è¼¸å…¥é¸æ“‡çš„è®Šæ•¸
     }
 
     cout << "Enter edit value: ";
-    variableList[choose].value = enterFloat();  // ¿é¤JÅÜ¼Æ­È
+    variableList[choose].value = enterFloat();  // è¼¸å…¥è®Šæ•¸å€¼
     while (isnan(variableList[choose].value)) {
-        cout << "Error: Invalid value, Try again: ";  // ¿ù»~´£¥Ü
-        variableList[choose].value = enterFloat();    // ¿é¤JÅÜ¼Æ­È
+        cout << "Error: Invalid value, Try again: ";  // éŒ¯èª¤æç¤º
+        variableList[choose].value = enterFloat();    // è¼¸å…¥è®Šæ•¸å€¼
     }
 }
-// ­pºâ¹ê§@Åé¿ô¡A§Ú·|¥Îvector<string>¨ÓÀx¦s«á§Çªí¹F¦¡¡C
-// ¥¿±`ªº¹Bºâ¤l¬O¦pªG¸Óºâ¤l«e­±¦³¨â­Ó¼Æ¦r¡A«hpop¨â­Ó¼Æ¦r¨Ã­pºâ¡AµM«ápush¦^¥h¡C
-// !­t¸¹©M~¤Ï¦Vªº¹Bºâ¤l¬O¦pªG¸Óºâ¤l«e­±¦³¤@­Ó¼Æ¦r¡A«hpop¤@­Ó¼Æ¦r¨Ã­pºâ¡AµM«ápush¦^¥h¡C
-// ª`·N¤p¼Æ¦³¤TºØ±¡ªp¡G 1. 123.123 2. .3 = 0.3 3. 123. = 123.0 ¸g¹LÂà´««á¥u·|¦³³o¤TºØ±¡ªp¡C
-// ´ú¸Õ®×¨Ò¥i¥H¥sgptÀ°§A¥Í¦¨¡C
-// ¥H¤U¤T­Ó¬O­pºâ®É¤~·|ÅçÃÒªº¿ù»~
-// AND/OR/XOR ¥ª¥k¬O§_¬°¥¬ªL­È
-// ¤ñ¸û¹Bºâ²Åªº¨âÃä¬O§_¬°¦Xªk¤ñ¸û¥Ø¼Ğ (¦p a == b == c ¤£¦Xªk)
-// NOT ¬O§_±µªº¬O¥¬ªL±ø¥ó©Î¦XªkªºÅŞ¿è²Õ¦X (¦p NOT(a + b) ¤£¦Xªk)
+// è¨ˆç®—å¯¦ä½œé«”é†’ï¼Œæˆ‘æœƒç”¨vector<string>ä¾†å„²å­˜å¾Œåºè¡¨é”å¼ã€‚
+// æ­£å¸¸çš„é‹ç®—å­æ˜¯å¦‚æœè©²ç®—å­å‰é¢æœ‰å…©å€‹æ•¸å­—ï¼Œå‰‡popå…©å€‹æ•¸å­—ä¸¦è¨ˆç®—ï¼Œç„¶å¾Œpushå›å»ã€‚
+// !è² è™Ÿå’Œ~åå‘çš„é‹ç®—å­æ˜¯å¦‚æœè©²ç®—å­å‰é¢æœ‰ä¸€å€‹æ•¸å­—ï¼Œå‰‡popä¸€å€‹æ•¸å­—ä¸¦è¨ˆç®—ï¼Œç„¶å¾Œpushå›å»ã€‚
+// æ³¨æ„å°æ•¸æœ‰ä¸‰ç¨®æƒ…æ³ï¼š 1. 123.123 2. .3 = 0.3 3. 123. = 123.0 ç¶“éè½‰æ›å¾Œåªæœƒæœ‰é€™ä¸‰ç¨®æƒ…æ³ã€‚
+// æ¸¬è©¦æ¡ˆä¾‹å¯ä»¥å«gptå¹«ä½ ç”Ÿæˆã€‚
+// ä»¥ä¸‹ä¸‰å€‹æ˜¯è¨ˆç®—æ™‚æ‰æœƒé©—è­‰çš„éŒ¯èª¤
+// AND/OR/XOR å·¦å³æ˜¯å¦ç‚ºå¸ƒæ—å€¼
+// æ¯”è¼ƒé‹ç®—ç¬¦çš„å…©é‚Šæ˜¯å¦ç‚ºåˆæ³•æ¯”è¼ƒç›®æ¨™ (å¦‚ a == b == c ä¸åˆæ³•)
+// NOT æ˜¯å¦æ¥çš„æ˜¯å¸ƒæ—æ¢ä»¶æˆ–åˆæ³•çš„é‚è¼¯çµ„åˆ (å¦‚ NOT(a + b) ä¸åˆæ³•)
 
 void calculateExp(vector<Variable>& variableList) {
     string infix;
-    string print_type[3] = {"¼Æ¦r", "ÅÜ¼Æ", "¹Bºâ¤l"};  // Àx¦sÃş«¬ªº¦r¦ê°}¦C
+    string print_type[3] = {"æ•¸å­—", "è®Šæ•¸", "é‹ç®—å­"};  // å„²å­˜é¡å‹çš„å­—ä¸²é™£åˆ—
     vector<Tonken> vector_infix;
-    vector<Tonken> postfix;  // Àx¦s«á§Çªí¹F¦¡ªº¦V¶q
+    vector<Tonken> postfix;  // å„²å­˜å¾Œåºè¡¨é”å¼çš„å‘é‡
     clearScreen();
-    cout << "Enter a infix expression: ";  // ´£¥Ü¿é¤J¤¤§Çªí¹F¦¡
-    getline(cin, infix);                   // Åª¨ú¾ã¦æ¿é¤J
+    cout << "Enter a infix expression: ";  // æç¤ºè¼¸å…¥ä¸­åºè¡¨é”å¼
+    getline(cin, infix);                   // è®€å–æ•´è¡Œè¼¸å…¥
     bool check = infixToVector(infix, vector_infix, variableList);
     if (check) {
         for (int i = 0; i < vector_infix.size(); i++) {
-            cout << i << ". " << vector_infix[i].str << " " << print_type[vector_infix[i].type] << endl;  // ¿é¥X¦r¦ê©MÃş«¬
+            cout << i << ". " << vector_infix[i].str << " " << print_type[vector_infix[i].type] << endl;  // è¼¸å‡ºå­—ä¸²å’Œé¡å‹
         }
-        check = checkExpression(vector_infix);  // ÀË¬dªí¹F¦¡¬O§_¦³®Ä
+        check = checkExpression(vector_infix);  // æª¢æŸ¥è¡¨é”å¼æ˜¯å¦æœ‰æ•ˆ
 
         if (check) {
-            cout << "Valid" << endl;                // ¦pªG¦³®Ä¡A«h¿é¥X Valid
-            InfixToPostfix(vector_infix, postfix);  // Âà´«¬°«á§Çªí¹F¦¡
+            cout << "Valid" << endl;                // å¦‚æœæœ‰æ•ˆï¼Œå‰‡è¼¸å‡º Valid
+            InfixToPostfix(vector_infix, postfix);  // è½‰æ›ç‚ºå¾Œåºè¡¨é”å¼
             for (int i = 0; i < postfix.size(); i++) {
-                cout << postfix[i].str << " ";  // ¿é¥X«á§Çªí¹F¦¡
+                cout << postfix[i].str << " ";  // è¼¸å‡ºå¾Œåºè¡¨é”å¼
             }
-            cout << endl;  // ´«¦æ
+            cout << endl;  // æ›è¡Œ
         } else {
-            cout << "Invalid" << endl;  // ¦pªGµL®Ä¡A«h¿é¥X Invalid
+            cout << "Invalid" << endl;  // å¦‚æœç„¡æ•ˆï¼Œå‰‡è¼¸å‡º Invalid
         }
     } else {
-        cout << "Invalid" << endl;  // ¦pªGµL®Ä¡A«h¿é¥X Invalid
+        cout << "Invalid" << endl;  // å¦‚æœç„¡æ•ˆï¼Œå‰‡è¼¸å‡º Invalid
     }
 
     cout << endl;
-    cout << "Press Enter to continue..." << endl;  // ´£¥Ü«ö¤U Enter ÁäÄ~Äò
-    cin.get();                                     // µ¥«İ¨Ï¥ÎªÌ«ö¤U Enter Áä
+    cout << "Press Enter to continue..." << endl;  // æç¤ºæŒ‰ä¸‹ Enter éµç¹¼çºŒ
+    cin.get();                                     // ç­‰å¾…ä½¿ç”¨è€…æŒ‰ä¸‹ Enter éµ
 }
 
 int main() {
-    // InfixToPostfix(infix, postfix);  // Âà´«¬°«á§Çªí¹F¦¡
-    // // ¿é¥X«á§Çªí¹F¦¡
+    // InfixToPostfix(infix, postfix);  // è½‰æ›ç‚ºå¾Œåºè¡¨é”å¼
+    // // è¼¸å‡ºå¾Œåºè¡¨é”å¼
     // for (int i = 0; i < postfix.size(); i++) {
     //     cout << postfix[i];(1+(2*(3+(4*(5-6)))))
     // }
@@ -541,20 +541,19 @@ int main() {
         cout << "3. edit variable " << endl;
         cout << "0. exit" << endl;
         cout << "chose: " << choose;
-        getline(cin, choose);  // ¿é¤J¿ï¾Ü
+        getline(cin, choose);  // è¼¸å…¥é¸æ“‡
         if (choose == "1") {
-            calculateExp(variableList);  // ­pºâªí¹F¦¡
+            calculateExp(variableList);  // è¨ˆç®—è¡¨é”å¼
         } else if (choose == "2") {
-            enterVar(variableList);  // ¿é¤JÅÜ¼Æ
+            enterVar(variableList);  // è¼¸å…¥è®Šæ•¸
         } else if (choose == "3") {
-            editVar(variableList);  // ½s¿èÅÜ¼Æ
+            editVar(variableList);  // ç·¨è¼¯è®Šæ•¸
         } else if (choose == "0") {
-            cout << "Exit" << endl;  // ¿é¥X°h¥X´£¥Ü
             break;
         } else {
-            cout << "Invalid choice" << endl;              // ¿ù»~´£¥Ü
-            cout << "Press Enter to continue..." << endl;  // ´£¥Ü«ö¤U Enter ÁäÄ~Äò
-            cin.ignore();                                  // ²M°£½w½Ä°Ï
+            cout << "Invalid choice" << endl;              // éŒ¯èª¤æç¤º
+            cout << "Press Enter to continue..." << endl;  // æç¤ºæŒ‰ä¸‹ Enter éµç¹¼çºŒ
+            cin.ignore();                                  // æ¸…é™¤ç·©è¡å€
         }
         clearScreen();
     }
