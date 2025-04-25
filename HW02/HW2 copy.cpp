@@ -351,8 +351,8 @@ bool infixToVector(const string infix, vector<Tonken>& vector_infix, const vecto
         return false;                                          // 返回錯誤
     }
 
-    return true;
-}
+    return true;  // 返回成功
+};
 
 // 檢查表達式是否有效
 // 這個部分會檢查括號有沒有配對、有沒有不合法的連續operater、operater後面有沒有數字
@@ -428,7 +428,7 @@ void InfixToPostfix(const vector<Tonken>& infix, vector<Tonken>& postfix) {
             i++;
         }
         if (navtiveTemp % 2 == 1) {
-            temp.push(Tonken('!', 2));  // push '!' 到 Stack
+            temp.push(Tonken('!', 2));  // push '-' 到 Stack
         }
     }
 
@@ -444,7 +444,7 @@ void InfixToPostfix(const vector<Tonken>& infix, vector<Tonken>& postfix) {
                 i++;
             }
             if (navtiveTemp % 2 == 1) {
-                temp.push(Tonken('!', 2));  // push '!' 到 Stack
+                temp.push(Tonken('!', 2));  // push '-' 到 Stack
             }
             i--;
             continue;
