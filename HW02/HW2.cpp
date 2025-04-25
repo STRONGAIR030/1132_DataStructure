@@ -35,6 +35,8 @@ void clearScreen() {
 #endif
 }
 
+int enterInt();
+float enterFloat();
 bool isOperater(char ch);
 int inStackPrecedence(char op);
 int inComingPrecedence(char op);
@@ -91,6 +93,28 @@ class Stack {
         return top == nullptr;  // 如果 top 為 nullptr，則堆疊為空
     }
 };
+
+int enterInt() {
+    string str;
+    getline(cin, str);  // 讀取整行輸入
+
+    try {
+        return stoi(str);  // 嘗試將字串轉換為整數
+    } catch (...) {
+        return -1;
+    }
+}
+
+float enterFloat() {
+    string str;
+    getline(cin, str);  // 讀取整行輸入
+
+    try {
+        return stof(str);  // 嘗試將字串轉換為浮點數
+    } catch (...) {
+        return NAN;
+    }
+}
 
 string transCharToString(char ch) {
     string str = "";  // 初始化空字串
@@ -208,7 +232,7 @@ bool infixToVector(const string infix, vector<Tonken>& vector_infix, const vecto
 
         if (!isalpha(infix[i])) {
             if (!alphabetTemp.empty()) {
-                if (getVarialbe(alphabetTemp, variableList) != NAN) {
+                if (!isnan(getVarialbe(alphabetTemp, variableList))) {
                     vector_infix.emplace_back(alphabetTemp, 1);  // 將字母加入向量
                     alphabetTemp = "";                           // 清空字母暫存變數
                 } else {
@@ -244,7 +268,12 @@ bool infixToVector(const string infix, vector<Tonken>& vector_infix, const vecto
             int found = findLogicOperater(alphabetTemp);  // 判斷是否為邏輯運算子
             if (found != -1) {
                 if (found != 0) {
-                    vector_infix.emplace_back(alphabetTemp.substr(0, found), 1);
+                    string var = alphabetTemp.substr(0, found);
+                    if (isnan(getVarialbe(var, variableList))) {
+                        cout << "Invalid variable: " << var << endl;
+                        return false;
+                    }
+                    vector_infix.emplace_back(var, 1);
                 }
                 vector_infix.emplace_back(alphabetTemp.substr(found), 2);  // 將字母加入向量V
                 alphabetTemp = "";
@@ -274,6 +303,10 @@ bool infixToVector(const string infix, vector<Tonken>& vector_infix, const vecto
     }
 
     if (!alphabetTemp.empty()) {
+        if (isnan(getVarialbe(alphabetTemp, variableList))) {
+            cout << "Invalid variable: " << alphabetTemp << endl;
+            return false;
+        }
         vector_infix.emplace_back(alphabetTemp, 1);  // 將字母加入向量
         alphabetTemp = "";                           // 清空字母暫存變數
     }
@@ -403,21 +436,10 @@ void InfixToPostfix(const vector<Tonken>& infix, vector<Tonken>& postfix) {
     }
 }
 
-// 計算實作體醒，我會用vector<string>來儲存後序表達式。
-// 正常的運算子是如果該算子前面有兩個數字，則pop兩個數字並計算，然後push回去。
-// !負號和~反向的運算子是如果該算子前面有一個數字，則pop一個數字並計算，然後push回去。
-// 注意小數有三種情況： 1. 123.123 2. .3 = 0.3 3. 123. = 123.0 經過轉換後只會有這三種情況。
-// 測試案例可以叫gpt幫你生成。
-// 以下三個是計算時才會驗證的錯誤
-// AND/OR/XOR 左右是否為布林值
-// 比較運算符的兩邊是否為合法比較目標 (如 a == b == c 不合法)
-// NOT 是否接的是布林條件或合法的邏輯組合 (如 NOT(a + b) 不合法)
-
 void enterVar(vector<Variable>& variableList) {
     cout << "Enter a variable name(only alpha and not include AND, OR, NOT, XOR): ";
     string name;
-    cin >> name;   // 輸入變數名稱
-    cin.ignore();  // 清除緩衝區
+    getline(cin, name);  // 輸入變數名稱
     for (int i = 0; i < variableList.size(); i++) {
         if (variableList[i].name == name) {
             cout << "Error: Variable name already exists" << endl;  // 錯誤提示
@@ -425,9 +447,11 @@ void enterVar(vector<Variable>& variableList) {
         }
     }
     cout << "Enter a variable value(float): ";
-    float value;
-    cin >> value;
-    cin.ignore();                            // 清除緩衝區
+    float value = enterFloat();  // 輸入變數值
+    while (isnan(value)) {
+        cout << "Error: Invalid value, Try again: ";  // 錯誤提示
+        value = enterFloat();                         // 輸入變數值
+    }
     variableList.emplace_back(name, value);  // 將變數加入變數列表
 }
 
@@ -438,25 +462,44 @@ void editVar(vector<Variable>& variableList) {
         cin.get();                                     // 等待使用者按下 Enter 鍵
         return;
     }
+
     for (int i = 0; i < variableList.size(); i++) {
         cout << i << ". " << variableList[i].name << " == " << variableList[i].value << endl;  // 輸出變數名稱
     }
+
     int choose = -1;
     cout << "choose variable: ";  // 提示選擇變數
+    choose = enterInt();          // 輸入選擇的變數
     while (choose < 0 || choose >= variableList.size()) {
-        cin >> choose;                                 // 輸入選擇的變數
-        cin.ignore();                                  // 清除緩衝區
         cout << "Error: Invalid choice, Try again: ";  // 錯誤提示
+        choose = enterInt();                           // 輸入選擇的變數
     }
+
     cout << "Enter edit value: ";
-    cin >> variableList[choose].value;  // 輸入變數值
-    cin.ignore();                       // 清除緩衝區
+    variableList[choose].value = enterFloat();  // 輸入變數值
+    while (isnan(variableList[choose].value)) {
+        cout << "Error: Invalid value, Try again: ";  // 錯誤提示
+        variableList[choose].value = enterFloat();    // 輸入變數值
+    }
 }
+// 計算實作體醒，我會用vector<string>來儲存後序表達式。
+// 正常的運算子是如果該算子前面有兩個數字，則pop兩個數字並計算，然後push回去。
+// !負號和~反向的運算子是如果該算子前面有一個數字，則pop一個數字並計算，然後push回去。
+// 注意小數有三種情況： 1. 123.123 2. .3 = 0.3 3. 123. = 123.0 經過轉換後只會有這三種情況。
+// 測試案例可以叫gpt幫你生成。
+// 以下三個是計算時才會驗證的錯誤
+// AND/OR/XOR 左右是否為布林值
+// 比較運算符的兩邊是否為合法比較目標 (如 a == b == c 不合法)
+// NOT 是否接的是布林條件或合法的邏輯組合 (如 NOT(a + b) 不合法)
+
 void calculateExp(vector<Variable>& variableList) {
     string infix;
     string print_type[3] = {"數字", "變數", "運算子"};  // 儲存類型的字串陣列
     vector<Tonken> vector_infix;
     vector<Tonken> postfix;  // 儲存後序表達式的向量
+    clearScreen();
+    cout << "Enter a infix expression: ";  // 提示輸入中序表達式
+    getline(cin, infix);                   // 讀取整行輸入
     bool check = infixToVector(infix, vector_infix, variableList);
     if (check) {
         for (int i = 0; i < vector_infix.size(); i++) {
@@ -479,8 +522,10 @@ void calculateExp(vector<Variable>& variableList) {
     }
 
     cout << endl;
-    getline(cin, infix);  // 輸入中序表達式
+    cout << "Press Enter to continue..." << endl;  // 提示按下 Enter 鍵繼續
+    cin.get();                                     // 等待使用者按下 Enter 鍵
 }
+
 int main() {
     // InfixToPostfix(infix, postfix);  // 轉換為後序表達式
     // // 輸出後序表達式
@@ -488,34 +533,30 @@ int main() {
     //     cout << postfix[i];(1+(2*(3+(4*(5-6)))))
     // }
     vector<Variable> variableList;
-    while (true) {
-        while (true) {
-            string choose;
-            cout << "1. calculate expression(infix) " << endl;
-            cout << "2. assignments variable " << endl;
-            cout << "3. edit variable " << endl;
-            cout << "0. exit" << endl;
-            cout << "chose: " << choose;
-            getline(cin, choose);  // 輸入選擇
-            if (choose == "1") {
-                calculateExp(variableList);  // 計算表達式
-            } else if (choose == "2") {
-                enterVar(variableList);  // 輸入變數
-            } else if (choose == "3") {
-                editVar(variableList);  // 編輯變數
-            } else if (choose == "0") {
-                cout << "Exit" << endl;  // 輸出退出提示
-                break;
-            } else {
-                cout << "Invalid choice" << endl;              // 錯誤提示
-                cout << "Press Enter to continue..." << endl;  // 提示按下 Enter 鍵繼續
-                cin.ignore();                                  // 清除緩衝區
-            }
-            clearScreen();
-        }
-    }
 
-    cin.ignore();
-    cin.get();  // 等待使用者按下 Enter 鍵
+    while (true) {
+        string choose;
+        cout << "1. calculate expression(infix) " << endl;
+        cout << "2. assignments variable " << endl;
+        cout << "3. edit variable " << endl;
+        cout << "0. exit" << endl;
+        cout << "chose: " << choose;
+        getline(cin, choose);  // 輸入選擇
+        if (choose == "1") {
+            calculateExp(variableList);  // 計算表達式
+        } else if (choose == "2") {
+            enterVar(variableList);  // 輸入變數
+        } else if (choose == "3") {
+            editVar(variableList);  // 編輯變數
+        } else if (choose == "0") {
+            cout << "Exit" << endl;  // 輸出退出提示
+            break;
+        } else {
+            cout << "Invalid choice" << endl;              // 錯誤提示
+            cout << "Press Enter to continue..." << endl;  // 提示按下 Enter 鍵繼續
+            cin.ignore();                                  // 清除緩衝區
+        }
+        clearScreen();
+    }
     return 0;
 }
