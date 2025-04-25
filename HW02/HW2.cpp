@@ -613,31 +613,31 @@ int main() {
     vector<Variable> variableList;
 
     while (true) {
-        // string choose;
-        // SetConsoleOutputCP(65001);                          // 設定輸出編碼為UTF-8
-        // cout << "1. calculate expression(infix) " << endl;  // 計算功能
-        // cout << "2. assignments variable " << endl;         // 輸入變數功能
-        // cout << "3. edit variable " << endl;                /// 編輯變數功能
-        // cout << "0. exit" << endl;                          // 退出程式
-        // cout << "chose: " << choose;
-        // getline(cin, choose);  // 輸入選擇
-        // if (choose == "1") {
-        //     calculateExp(variableList);  // 計算表達式
-        // } else if (choose == "2") {
-        //     enterVar(variableList);  // 輸入變數
-        // } else if (choose == "3") {
-        //     editVar(variableList);  // 編輯變數
-        // } else if (choose == "0") {
-        //     break;  // 退出程式
-        // } else {
-        //     cout << "Invalid choice" << endl;              // 錯誤提示
-        //     cout << "Press Enter to continue..." << endl;  // 提示按下 Enter 鍵繼續
-        //     cin.ignore();                                  // 清除緩衝區
-        // }
-        // clearScreen();
-        string infix;
-        getline(cin, infix);                // 讀取整行輸入
-        testFunction(infix, variableList);  // 測試函數
+        string choose;
+        SetConsoleOutputCP(65001);                          // 設定輸出編碼為UTF-8
+        cout << "1. calculate expression(infix) " << endl;  // 計算功能
+        cout << "2. assignments variable " << endl;         // 輸入變數功能
+        cout << "3. edit variable " << endl;                /// 編輯變數功能
+        cout << "0. exit" << endl;                          // 退出程式
+        cout << "chose: " << choose;
+        getline(cin, choose);  // 輸入選擇
+        if (choose == "1") {
+            calculateExp(variableList);  // 計算表達式
+        } else if (choose == "2") {
+            enterVar(variableList);  // 輸入變數
+        } else if (choose == "3") {
+            editVar(variableList);  // 編輯變數
+        } else if (choose == "0") {
+            break;  // 退出程式
+        } else {
+            cout << "Invalid choice" << endl;              // 錯誤提示
+            cout << "Press Enter to continue..." << endl;  // 提示按下 Enter 鍵繼續
+            cin.ignore();                                  // 清除緩衝區
+        }
+        clearScreen();
+        // string infix;
+        // getline(cin, infix);                // 讀取整行輸入
+        // testFunction(infix, variableList);  // 測試函數
     }
     return 0;
 }
