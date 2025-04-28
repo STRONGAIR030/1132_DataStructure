@@ -9,16 +9,16 @@
 using namespace std;
 
 // 存表達式的Token
-struct Tonken {
+struct token {
     string str;                                             // 儲存字串
     int type;                                               // 儲存類型 (0: 數字, 1: 變數, 2. 運算子)
-    Tonken(string str, int type) : str(str), type(type) {}  // 為了使用emplace_back設的
-    Tonken(char ch, int type) : type(type) {                // 為了使用emplace_back設的
+    token(string str, int type) : str(str), type(type) {}  // 為了使用emplace_back設的
+    token(char ch, int type) : type(type) {                // 為了使用emplace_back設的
         str = "";                                           // 初始化空字串
         str += ch;                                          // 將字符加入字串
     }  // 預設建構子
-    Tonken(const Tonken& t) : str(t.str), type(t.type) {}  // 複製用
-    Tonken() : str(""), type(-1) {                         // 沒設會錯誤
+    token(const token& t) : str(t.str), type(t.type) {}  // 複製用
+    token() : str(""), type(-1) {                         // 沒設會錯誤
     }
 };
 
@@ -45,7 +45,7 @@ float enterFloat();                                                         // �
 bool isOperater(char ch);                                                   // 判斷是否為operater
 int inStackPrecedence(char op);                                             // 取得在stack裡的優先度
 int inComingPrecedence(char op);                                            // 取得要加進stack運算子的優先度
-void InfixToPostfix(const vector<Tonken>& infix, vector<Tonken>& postfix);  // infix轉postfix
+void InfixToPostfix(const vector<token>& infix, vector<token>& postfix);  // infix轉postfix
 bool isNormalOperater(char ch);                                             // 判斷是否為(+ - * / ^ %)
 bool isNormalOperater(string str);                                          // 參數多型
 bool isLogicOperater(string str);                                           // 判斷是否為邏輯operater
@@ -54,7 +54,7 @@ float getVarialbe(string str, const vector<Variable>& variableList);        // �
 
 // 定義 Stack 的節點結構
 struct Node {
-    Tonken data;  // 存儲字符 (運算子或括號)
+    token data;  // 存儲字符 (運算子或括號)
     Node* next;   // 指向下一個節點
 };
 
@@ -66,7 +66,7 @@ class Stack {
     Stack() { top = nullptr; }  // 初始化堆疊
 
     // Push 操作：將元素放入堆疊
-    void push(Tonken data) {
+    void push(token data) {
         Node* temp = new Node;  // 創建新節點
         temp->data = data;      // 設定節點數據
         temp->next = top;       // 將新節點的 next 指向當前的 top
@@ -74,10 +74,10 @@ class Stack {
     }
 
     // Pop 操作：移除並回傳頂端元素
-    Tonken pop() {
+    token pop() {
         // 如果堆疊不為空，則移除頂端元素並返回其值
         if (top != nullptr) {
-            Tonken popToken = top->data;  // 取得頂端節點的值
+            token popToken = top->data;  // 取得頂端節點的值
             Node* temp = top;             //  暫存當前頂端節點
             top = top->next;              // 更新 top 為上一個節點
             delete temp;                  // 釋放要刪除的節點
@@ -85,11 +85,11 @@ class Stack {
         }
 
         // 如果堆疊為空，則回傳 0
-        return Tonken(" ", -1);
+        return token(" ", -1);
     }
 
     // Peek 操作：取得頂端元素但不移除
-    Tonken peek() {
+    token peek() {
         return top->data;  // 回傳頂端節點的值
     }
 
@@ -230,9 +230,9 @@ float getVarialbe(string str, const vector<Variable>& variableList) {
     return NAN;
 }
 
-// 將字串分段存成Tonken vector方便後面處裡
+// 將字串分段存成token vector方便後面處裡
 // 這個部分也會順便判斷變數使否從在、小數點有沒有太多
-bool infixToVector(const string infix, vector<Tonken>& vector_infix, const vector<Variable>& variableList) {
+bool infixToVector(const string infix, vector<token>& vector_infix, const vector<Variable>& variableList) {
     string numberTemp = "";    // 數字暫存器
     string operatorTemp = "";  // operater暫存器
     string alphabetTemp = "";  // 字母暫存器
@@ -357,7 +357,7 @@ bool infixToVector(const string infix, vector<Tonken>& vector_infix, const vecto
 // 檢查表達式是否有效
 // 這個部分會檢查括號有沒有配對、有沒有不合法的連續operater、operater後面有沒有數字
 // 邏輯operater和比較運operater再計算時才回檢查有沒有合法這裡不檢查
-bool checkExpression(const vector<Tonken>& infix) {
+bool checkExpression(const vector<token>& infix) {
     Stack temp;
     int leftParentheses = 0;                                                                          // 計算左括號的數量
     int rightParentheses = 0;                                                                         // 計算右括號的數量
@@ -416,7 +416,7 @@ bool checkExpression(const vector<Tonken>& infix) {
 }
 
 // 將中序表達式 (infix) 轉換為後序表達式 (postfix)
-void InfixToPostfix(const vector<Tonken>& infix, vector<Tonken>& postfix) {
+void InfixToPostfix(const vector<token>& infix, vector<token>& postfix) {
     Stack temp;  // 使用 Stack 來儲存運算子
     int i = 0;
     if (infix[0].str == "-" || infix[0].str == "+") {
@@ -428,7 +428,7 @@ void InfixToPostfix(const vector<Tonken>& infix, vector<Tonken>& postfix) {
             i++;
         }
         if (navtiveTemp % 2 == 1) {
-            temp.push(Tonken('!', 2));  // push '!' 到 Stack
+            temp.push(token('!', 2));  // push '!' 到 Stack
         }
     }
 
@@ -444,7 +444,7 @@ void InfixToPostfix(const vector<Tonken>& infix, vector<Tonken>& postfix) {
                 i++;
             }
             if (navtiveTemp % 2 == 1) {
-                temp.push(Tonken('!', 2));  // push '!' 到 Stack
+                temp.push(token('!', 2));  // push '!' 到 Stack
             }
             i--;
             continue;
@@ -452,7 +452,7 @@ void InfixToPostfix(const vector<Tonken>& infix, vector<Tonken>& postfix) {
 
         // 如果遇到')'，則pop運算子直到遇到'('
         if (infix[i].str == ")") {
-            Tonken popItem = temp.pop();  // pop運算子
+            token popItem = temp.pop();  // pop運算子
             // pop運算子直到遇到'('
             while (popItem.str != "(") {
                 postfix.push_back(popItem);  // 放入postfix
@@ -554,8 +554,8 @@ void editVar(vector<Variable>& variableList) {
 void calculateExp(vector<Variable>& variableList) {
     string infix;
     string print_type[3] = {"數字", "變數", "運算子"};  // 儲存類型的字串陣列
-    vector<Tonken> vector_infix;                        // 儲存轉成vector的infix
-    vector<Tonken> postfix;                             // 儲存轉化過後的postfix
+    vector<token> vector_infix;                        // 儲存轉成vector的infix
+    vector<token> postfix;                             // 儲存轉化過後的postfix
     clearScreen();
     cout << "Enter a infix expression: ";  // 提示輸入中序表達式
     getline(cin, infix);                   // 讀取整行輸入
@@ -587,8 +587,8 @@ void calculateExp(vector<Variable>& variableList) {
 
 void testFunction(const string infix, vector<Variable>& variableList) {
     string print_type[3] = {"數字", "變數", "運算子"};              // 儲存類型的字串陣列
-    vector<Tonken> vector_infix;                                    // 儲存轉成vector的infix
-    vector<Tonken> postfix;                                         // 儲存轉化過後的postfix
+    vector<token> vector_infix;                                    // 儲存轉成vector的infix
+    vector<token> postfix;                                         // 儲存轉化過後的postfix
     bool check = infixToVector(infix, vector_infix, variableList);  // 將infix轉換為vector
     if (check == false) {
         cout << "Invalid" << endl;  // 錯誤提示
