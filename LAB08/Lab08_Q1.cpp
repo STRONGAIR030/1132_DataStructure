@@ -176,8 +176,5 @@ int main() {
     cout << "刪除後的樹（中序遍歷）：" << endl;
     bst.displayInOrder();
 
-    cin.ignore();  // 清除輸入緩衝區
-    cin.get();
-
     return 0;
 }
