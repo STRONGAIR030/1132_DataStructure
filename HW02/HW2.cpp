@@ -9,16 +9,16 @@
 using namespace std;
 
 // 存表達式的Token
-struct token {
-    string str;                                             // 儲存字串
-    int type;                                               // 儲存類型 (0: 數字, 1: 變數, 2. 運算子)
-    token(string str, int type) : str(str), type(type) {}  // 為了使用emplace_back設的
-    token(char ch, int type) : type(type) {                // 為了使用emplace_back設的
-        str = "";                                           // 初始化空字串
-        str += ch;                                          // 將字符加入字串
+struct Token {
+    string str;                                            // 儲存字串
+    int type;                                              // 儲存類型 (0: 數字, 1: 變數, 2. 運算子)
+    Token(string str, int type) : str(str), type(type) {}  // 為了使用emplace_back設的
+    Token(char ch, int type) : type(type) {                // 為了使用emplace_back設的
+        str = "";                                          // 初始化空字串
+        str += ch;                                         // 將字符加入字串
     }  // 預設建構子
-    token(const token& t) : str(t.str), type(t.type) {}  // 複製用
-    token() : str(""), type(-1) {                         // 沒設會錯誤
+    Token(const Token& t) : str(t.str), type(t.type) {}  // 複製用
+    Token() : str(""), type(-1) {                        // 沒設會錯誤
     }
 };
 
@@ -40,22 +40,22 @@ void clearScreen() {
 #endif
 }
 
-int enterInt();                                                             // 取得合法int
-float enterFloat();                                                         // 取得合法float
-bool isOperater(char ch);                                                   // 判斷是否為operater
-int inStackPrecedence(char op);                                             // 取得在stack裡的優先度
-int inComingPrecedence(char op);                                            // 取得要加進stack運算子的優先度
-void InfixToPostfix(const vector<token>& infix, vector<token>& postfix);  // infix轉postfix
-bool isNormalOperater(char ch);                                             // 判斷是否為(+ - * / ^ %)
-bool isNormalOperater(string str);                                          // 參數多型
-bool isLogicOperater(string str);                                           // 判斷是否為邏輯operater
-bool isCompareOperater(string str);                                         // 判斷是否為比較operater
-float getVarialbe(string str, const vector<Variable>& variableList);        // 取得變數表的變數
+int enterInt();                                                           // 取得合法int
+float enterFloat();                                                       // 取得合法float
+bool isOperater(char ch);                                                 // 判斷是否為operater
+int inStackPrecedence(char op);                                           // 取得在stack裡的優先度
+int inComingPrecedence(char op);                                          // 取得要加進stack運算子的優先度
+void InfixToPostfix(const vector<Token>& infix, vector<Token>& postfix);  // infix轉postfix
+bool isNormalOperater(char ch);                                           // 判斷是否為(+ - * / ^ %)
+bool isNormalOperater(string str);                                        // 參數多型
+bool isLogicOperater(string str);                                         // 判斷是否為邏輯operater
+bool isCompareOperater(string str);                                       // 判斷是否為比較operater
+float getVarialbe(string str, const vector<Variable>& variableList);      // 取得變數表的變數
 
 // 定義 Stack 的節點結構
 struct Node {
-    token data;  // 存儲字符 (運算子或括號)
-    Node* next;   // 指向下一個節點
+    Token data;  // 存儲字符 (運算子或括號)
+    Node* next;  // 指向下一個節點
 };
 
 // 使用 linked list 實作 Stack
@@ -66,7 +66,7 @@ class Stack {
     Stack() { top = nullptr; }  // 初始化堆疊
 
     // Push 操作：將元素放入堆疊
-    void push(token data) {
+    void push(Token data) {
         Node* temp = new Node;  // 創建新節點
         temp->data = data;      // 設定節點數據
         temp->next = top;       // 將新節點的 next 指向當前的 top
@@ -74,22 +74,22 @@ class Stack {
     }
 
     // Pop 操作：移除並回傳頂端元素
-    token pop() {
+    Token pop() {
         // 如果堆疊不為空，則移除頂端元素並返回其值
         if (top != nullptr) {
-            token popToken = top->data;  // 取得頂端節點的值
-            Node* temp = top;             //  暫存當前頂端節點
-            top = top->next;              // 更新 top 為上一個節點
-            delete temp;                  // 釋放要刪除的節點
-            return popToken;              // 回傳刪除節點的值
+            Token popToken = top->data;  // 取得頂端節點的值
+            Node* temp = top;            //  暫存當前頂端節點
+            top = top->next;             // 更新 top 為上一個節點
+            delete temp;                 // 釋放要刪除的節點
+            return popToken;             // 回傳刪除節點的值
         }
 
         // 如果堆疊為空，則回傳 0
-        return token(" ", -1);
+        return Token(" ", -1);
     }
 
     // Peek 操作：取得頂端元素但不移除
-    token peek() {
+    Token peek() {
         return top->data;  // 回傳頂端節點的值
     }
 
@@ -174,6 +174,17 @@ int findLogicOperater(string str) {
     return -1;  // 如果沒有找到，則返回 -1
 }
 
+// 查看字串是否包含boolean，有就回傳位置
+int findBoolean(string str) {
+    // 依序判斷
+    if (str.find("True") != string::npos) {
+        return str.find("True");
+    } else if (str.find("False") != string::npos) {
+        return str.find("False");
+    }
+    return -1;  // 如果沒有找到，則返回 -1
+}
+
 bool isNumber(char ch) {
     return isdigit(ch) || ch == '.';  // 判斷是否為數字或小數點
 }
@@ -230,21 +241,21 @@ float getVarialbe(string str, const vector<Variable>& variableList) {
     return NAN;
 }
 
-// 將字串分段存成token vector方便後面處裡
+// 將字串分段存成Token vector方便後面處裡
 // 這個部分也會順便判斷變數使否從在、小數點有沒有太多
-bool infixToVector(const string infix, vector<token>& vector_infix, const vector<Variable>& variableList) {
+bool infixToVector(const string infix, vector<Token>& vector_infix, const vector<Variable>& variableList) {
     string numberTemp = "";    // 數字暫存器
     string operatorTemp = "";  // operater暫存器
     string alphabetTemp = "";  // 字母暫存器
     int point = 0;             // 計算小數點的數量
 
     for (int i = 0; i < infix.length(); i++) {
-        // 先將前一格token處裡完，再來看下個token是甚麼
+        // 先將前一格Token處裡完，再來看下個Token是甚麼
         // 所以看起來有點反邏輯
 
         // 如果字元不是數字，檢查暫存器是否為空
         if (!isNumber(infix[i])) {
-            if (!numberTemp.empty()) {                     // 不為空代表上個token是數字，將數字暫存器的數字加入vectoer
+            if (!numberTemp.empty()) {                     // 不為空代表上個Token是數字，將數字暫存器的數字加入vectoer
                 vector_infix.emplace_back(numberTemp, 0);  // 將數字加入vectoer
                 numberTemp = "";                           // 清空數字暫存器
                 point = 0;                                 // 清空小數點的數量
@@ -253,7 +264,7 @@ bool infixToVector(const string infix, vector<token>& vector_infix, const vector
         // 如果這個字元不是字母，檢查暫存器是否為空
         if (!isalpha(infix[i])) {
             if (!alphabetTemp.empty()) {
-                // 有東西代表上個token是字母
+                // 有東西代表上個Token是字母
                 // 因為如果包函邏輯符號上一個迴圈就已經push進去了，所以一定是變數
                 if (!isnan(getVarialbe(alphabetTemp, variableList))) {  // 檢查變數有沒有在變數表，沒有就錯誤
                     vector_infix.emplace_back(alphabetTemp, 1);         // 將字母加入vecoter
@@ -268,7 +279,7 @@ bool infixToVector(const string infix, vector<token>& vector_infix, const vector
         // 如果不可能是多元operater，做一些判斷
         if (!(infix[i] == '=' || infix[i] == '>' || infix[i] == '<' || infix[i] == '!')) {
             if (operatorTemp == ">" || operatorTemp == "<") {
-                // 如果是>或<但代表上個token就是這兩個其中一個，因為其他都已經處裡過了
+                // 如果是>或<但代表上個Token就是這兩個其中一個，因為其他都已經處裡過了
                 vector_infix.emplace_back(operatorTemp, 2);  // 將運算子加入vector
                 operatorTemp = "";                           // 清空operater暫存器
             } else if (!operatorTemp.empty()) {
@@ -292,19 +303,28 @@ bool infixToVector(const string infix, vector<token>& vector_infix, const vector
 
         // 如果是字母
         if (isalpha(infix[i])) {
-            alphabetTemp += infix[i];                     // 將字母加入暫存變數
-            int found = findLogicOperater(alphabetTemp);  // 判斷是否為邏輯operater
-            if (found != -1) {                            // 有找到邏輯符號分切這格token加入vector
-                if (found != 0) {                         // 如果不為0代表他是在變數後面被找到的要把變數也加入vector
-                    string var = alphabetTemp.substr(0, found);
+            alphabetTemp += infix[i];                           // 將字母加入暫存變數
+            int found_logic = findLogicOperater(alphabetTemp);  // 判斷是否有邏輯operater在暫存器中
+            int found_boolean = findBoolean(alphabetTemp);      // 判斷是否有boolean在暫存器中
+            if (found_boolean != -1) {
+                if (found_boolean == 0) {                                                 // 字串中只有boolean
+                    vector_infix.emplace_back(alphabetTemp, 0);                           // 將boolean加入vector
+                    alphabetTemp = "";                                                    // 清空暫存器
+                } else {                                                                  // 如果他在字母後面被找到代表連續數字或變數錯誤
+                    cout << "Invalid expression: continuous number or variable" << endl;  // 錯誤提示
+                    return false;
+                }
+            } else if (found_logic != -1) {  // 有找到邏輯符號分切這格Token加入vector
+                if (found_logic != 0) {      // 如果不為0代表他是在變數後面被找到的要把變數也加入vector
+                    string var = alphabetTemp.substr(0, found_logic);
                     if (isnan(getVarialbe(var, variableList))) {  // 檢查變數是否再變數表
                         cout << "Invalid variable: " << var << endl;
                         return false;
                     }
                     vector_infix.emplace_back(var, 1);  // 如果沒錯誤，將變數加入vectoer
                 }
-                vector_infix.emplace_back(alphabetTemp.substr(found), 2);  // 將邏輯operater加入vectoer
-                alphabetTemp = "";                                         // 清空暫存器
+                vector_infix.emplace_back(alphabetTemp.substr(found_logic), 2);  // 將邏輯operater加入vectoer
+                alphabetTemp = "";                                               // 清空暫存器
             }
         }
 
@@ -327,7 +347,7 @@ bool infixToVector(const string infix, vector<token>& vector_infix, const vector
         }
     }
 
-    // 處理最後一個token，處裡方式和上面一樣
+    // 處理最後一個Token，處裡方式和上面一樣
     if (!numberTemp.empty()) {
         vector_infix.emplace_back(numberTemp, 0);  // 將數字加入vector
         numberTemp = "";                           // 清空暫存器
@@ -357,7 +377,7 @@ bool infixToVector(const string infix, vector<token>& vector_infix, const vector
 // 檢查表達式是否有效
 // 這個部分會檢查括號有沒有配對、有沒有不合法的連續operater、operater後面有沒有數字
 // 邏輯operater和比較運operater再計算時才回檢查有沒有合法這裡不檢查
-bool checkExpression(const vector<token>& infix) {
+bool checkExpression(const vector<Token>& infix) {
     Stack temp;
     int leftParentheses = 0;                                                                          // 計算左括號的數量
     int rightParentheses = 0;                                                                         // 計算右括號的數量
@@ -390,10 +410,15 @@ bool checkExpression(const vector<token>& infix) {
                 cout << "Invalid expression: operater error" << endl;  // 錯誤提示
                 return false;                                          // 返回錯誤
             }
-        } else {           // 如果不是連續operater，做一些判斷
-            if (i == 0) {  // 如果是第一個token，則不檢查，因為上面已經檢查過了
+        } else {  // 如果不是連續operater，做一些判斷
+            if (i != 0 && infix[i].type != 2 && infix[i - 1].type != 2) {
+                cout << "Invalid expression: continuous number or variable" << endl;  // 錯誤提示
+                return false;                                                         // 返回錯誤
+            }
+
+            if (i == 0) {  // 如果是第一個Token，則不檢查，因為上面已經檢查過了
                 continue;
-            } else if (infix[i].str != "(" && infix[i].str != ")" && infix[i - 1].str != "(" && infix[i - 1].str != ")") {  // 只有兩個token中間有括號，才需要檢查，其他都是合法的
+            } else if (infix[i].str != "(" && infix[i].str != ")" && infix[i - 1].str != "(" && infix[i - 1].str != ")") {  // 只有兩個Token中間有括號，才需要檢查，其他都是合法的
                 continue;
             } else if (infix[i - 1].str == "(") {  // 左括號前面不能是數字
                 continue;
@@ -406,7 +431,7 @@ bool checkExpression(const vector<token>& infix) {
         }
     }
 
-    // 檢查最後一個token是否為數字或變數或)，不是就不合法
+    // 檢查最後一個Token是否為數字或變數或)，不是就不合法
     if (infix[infix.size() - 1].str != ")" && infix[infix.size() - 1].type == 2) {
         cout << "Invalid expression: last char invalid" << endl;  // 錯誤提示
         return false;                                             // 返回錯誤
@@ -416,7 +441,7 @@ bool checkExpression(const vector<token>& infix) {
 }
 
 // 將中序表達式 (infix) 轉換為後序表達式 (postfix)
-void InfixToPostfix(const vector<token>& infix, vector<token>& postfix) {
+void InfixToPostfix(const vector<Token>& infix, vector<Token>& postfix) {
     Stack temp;  // 使用 Stack 來儲存運算子
     int i = 0;
     if (infix[0].str == "-" || infix[0].str == "+") {
@@ -428,7 +453,7 @@ void InfixToPostfix(const vector<token>& infix, vector<token>& postfix) {
             i++;
         }
         if (navtiveTemp % 2 == 1) {
-            temp.push(token('!', 2));  // push '!' 到 Stack
+            temp.push(Token('!', 2));  // push '!' 到 Stack
         }
     }
 
@@ -444,7 +469,7 @@ void InfixToPostfix(const vector<token>& infix, vector<token>& postfix) {
                 i++;
             }
             if (navtiveTemp % 2 == 1) {
-                temp.push(token('!', 2));  // push '!' 到 Stack
+                temp.push(Token('!', 2));  // push '!' 到 Stack
             }
             i--;
             continue;
@@ -452,7 +477,7 @@ void InfixToPostfix(const vector<token>& infix, vector<token>& postfix) {
 
         // 如果遇到')'，則pop運算子直到遇到'('
         if (infix[i].str == ")") {
-            token popItem = temp.pop();  // pop運算子
+            Token popItem = temp.pop();  // pop運算子
             // pop運算子直到遇到'('
             while (popItem.str != "(") {
                 postfix.push_back(popItem);  // 放入postfix
@@ -476,7 +501,7 @@ void InfixToPostfix(const vector<token>& infix, vector<token>& postfix) {
 }
 
 void enterVar(vector<Variable>& variableList) {
-    cout << "Enter a variable name(only alpha and not include AND, OR, NOT, XOR): ";
+    cout << "Enter a variable name(only alpha and not include AND, OR, NOT, XOR, True, False): ";
     string name;
     getline(cin, name);  // 輸入變數名稱
     for (int i = 0; i < variableList.size(); i++) {
@@ -541,6 +566,7 @@ void editVar(vector<Variable>& variableList) {
 // AND/OR/XOR 左右是否為布林值
 // 比較運算符的兩邊是否為合法比較目標 (如 a == b == c 不合法)
 // NOT 是否接的是布林條件或合法的邏輯組合 (如 NOT(a + b) 不合法)
+// 現在數字(0、1)和boolean分開了，boolean會是True或False他的type一樣是數字。
 // --------------------------------------------------------
 // 統一事項(很重要):
 // 錯誤統一寫成這樣:  cout << "<甚麼錯誤>: <錯在哪> ";
@@ -550,144 +576,152 @@ void editVar(vector<Variable>& variableList) {
 // 可以使用isnan()來判斷是否為NAN，來檢查變數是否存在。
 // --------------------------------------------------------
 
-//計算結果
+// 計算結果
 void calulate(vector<Variable>& variableList, const string infix) {
-    vector<token> vector_infix; // 儲存中序表達式的 vector
-    vector<token> postfix;      // 儲存後序表達式的 vector
+    vector<Token> vector_infix;  // 儲存中序表達式的 vector
+    vector<Token> postfix;       // 儲存後序表達式的 vector
 
-    if (!infixToVector(infix, vector_infix, variableList)) {                   // 將表達式轉換為 vector
-        cout << "Invalid expression: Failed to parse infix to vector" << endl; //錯誤提示
+    if (!infixToVector(infix, vector_infix, variableList)) {                    // 將表達式轉換為 vector
+        cout << "Invalid expression: Failed to parse infix to vector" << endl;  // 錯誤提示
         return;
     }
 
-    if (!checkExpression(vector_infix)) {                   // 檢查表達式是否有效
-        cout << "Invalid expression: Syntax error" << endl; // 錯誤提示
+    if (!checkExpression(vector_infix)) {                    // 檢查表達式是否有效
+        cout << "Invalid expression: Syntax error" << endl;  // 錯誤提示
         return;
     }
 
-    InfixToPostfix(vector_infix, postfix); // 將中序表達式轉換為後序表達式
+    InfixToPostfix(vector_infix, postfix);  // 將中序表達式轉換為後序表達式
 
-    Stack calcStack; // 使用Stack儲存數字
-    for (const auto& tok : postfix) { // 遍歷後序表達式
-        if (tok.type == 0) {          // 如果是數字，則直接 push到Stack
-            calcStack.push(tok); 
-        } else if (tok.type == 1) {                           // 如果是變數，則獲取變數值並push到Stack
-            float value = getVarialbe(tok.str, variableList); 
+    Stack calcStack;                   // 使用Stack儲存數字
+    for (const auto& tok : postfix) {  // 遍歷後序表達式
+        if (tok.type == 0) {           // 如果是數字，則直接 push到Stack
+            calcStack.push(tok);
+        } else if (tok.type == 1) {  // 如果是變數，則獲取變數值並push到Stack
+            float value = getVarialbe(tok.str, variableList);
             if (isnan(value)) {
-                cout << "Invalid expression: Undefined variable " << tok.str << endl; // 錯誤提示
+                cout << "Invalid expression: Undefined variable " << tok.str << endl;  // 錯誤提示
                 return;
             }
-            calcStack.push(token(to_string(value), 0)); // 將變數值轉換為字串並push到Stack
-        } else if (tok.type == 2) {                     // 如果是運算子，則進行計算
-            string op = tok.str; 
-            if (op == "!") { 
-                if (calcStack.isEmpty()) { 
-                    cout << "Invalid expression: Missing operand for '!'" << endl; // 錯誤提示
-                    return;
-                }
-                float operand = stof(calcStack.pop().str);     // 取出運算符號
-                calcStack.push(token(to_string(-operand), 0)); // 將運算結果轉換為字串並push到Stack
-            } else if (op == "NOT") { // 如果是邏輯運算符號
+            calcStack.push(Token(to_string(value), 0));  // 將變數值轉換為字串並push到Stack
+        } else if (tok.type == 2) {                      // 如果是運算子，則進行計算
+            string op = tok.str;
+            if (op == "!") {
                 if (calcStack.isEmpty()) {
-                    cout << "Invalid expression: Missing operand for 'NOT'" << endl; // 錯誤提示
+                    cout << "Invalid expression: Missing operand for '!'" << endl;  // 錯誤提示
                     return;
                 }
-                float operand = stof(calcStack.pop().str);                               // 取出運算符號
-                if (!(operand == 0.0f || operand == 1.0f)) {                             // 判斷是否為布林值
-                    cout << "Logic error: NOT operand must be boolean (0 or 1)" << endl; // 錯誤提示
+                float operand = stof(calcStack.pop().str);      // 取出運算符號
+                calcStack.push(Token(to_string(-operand), 0));  // 將運算結果轉換為字串並push到Stack
+            } else if (op == "NOT") {                           // 如果是邏輯運算符號
+                if (calcStack.isEmpty()) {
+                    cout << "Invalid expression: Missing operand for 'NOT'" << endl;  // 錯誤提示
                     return;
                 }
-                calcStack.push(token(to_string(!static_cast<bool>(operand)), 0));        // 將運算結果轉換為字串並push到Stack
+                float operand = stof(calcStack.pop().str);                                // 取出運算符號
+                if (!(operand == 0.0f || operand == 1.0f)) {                              // 判斷是否為布林值
+                    cout << "Logic error: NOT operand must be boolean (0 or 1)" << endl;  // 錯誤提示
+                    return;
+                }
+                calcStack.push(Token(to_string(!static_cast<bool>(operand)), 0));  // 將運算結果轉換為字串並push到Stack
             } else {
-                if (calcStack.isEmpty()) { 
-                    cout << "Invalid expression: Missing operands" << endl; // 錯誤提示
-                    return;
-                }
-                float right = stof(calcStack.pop().str);                    // 取出運算符號
                 if (calcStack.isEmpty()) {
-                    cout << "Invalid expression: Missing operands" << endl; // 錯誤提示
+                    cout << "Invalid expression: Missing operands" << endl;  // 錯誤提示
                     return;
                 }
-                float left = stof(calcStack.pop().str); 
-                float result = 0; 
+                float right = stof(calcStack.pop().str);  // 取出運算符號
+                if (calcStack.isEmpty()) {
+                    cout << "Invalid expression: Missing operands" << endl;  // 錯誤提示
+                    return;
+                }
+                float left = stof(calcStack.pop().str);
+                float result = 0;
 
-                if (op == "+") result = left + right; 
-                else if (op == "-") result = left - right;
-                else if (op == "*") result = left * right;
+                if (op == "+")
+                    result = left + right;
+                else if (op == "-")
+                    result = left - right;
+                else if (op == "*")
+                    result = left * right;
                 else if (op == "/") {
-                    if (right == 0) {                                           // 除數為0不可能
-                        cout << "Invalid expression: Division by zero" << endl; // 錯誤提示
+                    if (right == 0) {                                            // 除數為0不可能
+                        cout << "Invalid expression: Division by zero" << endl;  // 錯誤提示
                         return;
                     }
-                    result = left / right; 
-                }
-                else if (op == "%") result = fmod(left, right); // 取餘數
-                else if (op == "^") result = pow(left, right);  // 取次方
-                else if (op == "==") result = (left == right); 
-                else if (op == "!=") result = (left != right); 
-                else if (op == "==") result = (left == right); 
-                else if (op == "!=") result = (left != right);
-                else if (op == "<") result = (left < right);
-                else if (op == "<=") result = (left <= right);
-                else if (op == ">") result = (left > right);
-                else if (op == ">=") result = (left >= right);
+                    result = left / right;
+                } else if (op == "%")
+                    result = fmod(left, right);  // 取餘數
+                else if (op == "^")
+                    result = pow(left, right);  // 取次方
+                else if (op == "==")
+                    result = (left == right);
+                else if (op == "!=")
+                    result = (left != right);
+                else if (op == "==")
+                    result = (left == right);
+                else if (op == "!=")
+                    result = (left != right);
+                else if (op == "<")
+                    result = (left < right);
+                else if (op == "<=")
+                    result = (left <= right);
+                else if (op == ">")
+                    result = (left > right);
+                else if (op == ">=")
+                    result = (left >= right);
                 else if (op == "AND") {
+                    if ((left != 0 && left != 1) || (right != 0 && right != 1)) {              // 判斷是否為布林值
+                        cout << "Logic error: AND operands must be boolean (0 or 1)" << endl;  // 錯誤提示
+                        return;
+                    }
+                    result = static_cast<int>(left) & static_cast<int>(right);  // 取AND
+                } else if (op == "OR") {
                     if ((left != 0 && left != 1) || (right != 0 && right != 1)) {             // 判斷是否為布林值
-                        cout << "Logic error: AND operands must be boolean (0 or 1)" << endl; // 錯誤提示
+                        cout << "Logic error: OR operands must be boolean (0 or 1)" << endl;  // 錯誤提示
                         return;
                     }
-                    result = static_cast<int>(left) & static_cast<int>(right); // 取AND
-                }
-                else if (op == "OR") {
-                    if ((left != 0 && left != 1) || (right != 0 && right != 1)) {            // 判斷是否為布林值
-                        cout << "Logic error: OR operands must be boolean (0 or 1)" << endl; // 錯誤提示
+                    result = static_cast<int>(left) | static_cast<int>(right);  // 取OR
+                } else if (op == "XOR") {
+                    if ((left != 0 && left != 1) || (right != 0 && right != 1)) {              // 判斷是否為布林值
+                        cout << "Logic error: XOR operands must be boolean (0 or 1)" << endl;  // 錯誤提示
                         return;
                     }
-                    result = static_cast<int>(left) | static_cast<int>(right); // 取OR
-                }
-                else if (op == "XOR") {
-                    if ((left != 0 && left != 1) || (right != 0 && right != 1)) {             // 判斷是否為布林值
-                        cout << "Logic error: XOR operands must be boolean (0 or 1)" << endl; // 錯誤提示
-                        return;
-                    }
-                    result = static_cast<int>(left) ^ static_cast<int>(right); // 取XOR
-                }
-                else {
-                    cout << "Invalid expression: Unsupported operator " << op << endl; // 錯誤提示
-                    return; 
+                    result = static_cast<int>(left) ^ static_cast<int>(right);  // 取XOR
+                } else {
+                    cout << "Invalid expression: Unsupported operator " << op << endl;  // 錯誤提示
+                    return;
                 }
 
-                calcStack.push(token(to_string(result), 0)); 
+                calcStack.push(Token(to_string(result), 0));
             }
         }
     }
 
-    if (calcStack.isEmpty() || calcStack.peek().type != 0) {     // 如果Stack為空或最後一位不是數字，則計算錯誤
-        cout << "Invalid expression: Calculation error" << endl; // 錯誤提示
+    if (calcStack.isEmpty() || calcStack.peek().type != 0) {      // 如果Stack為空或最後一位不是數字，則計算錯誤
+        cout << "Invalid expression: Calculation error" << endl;  // 錯誤提示
         return;
     }
 
-    float finalResult = stof(calcStack.pop().str);            // 取出最後的結果
+    float finalResult = stof(calcStack.pop().str);  // 取出最後的結果
     if (!calcStack.isEmpty()) {
-        cout << "Invalid expression: Extra operands" << endl; // 錯誤提示
+        cout << "Invalid expression: Extra operands" << endl;  // 錯誤提示
         return;
     }
 
     // 判斷是否為布林值
-    if (finalResult == 0.0f || finalResult == 1.0f) {                           // 如果是布林值，則輸出 true 或 false
-        cout << "Result: " << (finalResult == 1.0f ? "true" : "false") << endl; // 輸出結果
+    if (finalResult == 0.0f || finalResult == 1.0f) {                            // 如果是布林值，則輸出 true 或 false
+        cout << "Result: " << (finalResult == 1.0f ? "true" : "false") << endl;  // 輸出結果
     } else {
-        cout << "Result: " << finalResult << endl;                              // 如果不是布林值，則輸出數字
+        cout << "Result: " << finalResult << endl;  // 如果不是布林值，則輸出數字
     }
 }
-
 
 // 計算功能
 void calculateExp(vector<Variable>& variableList) {
     string infix;
     string print_type[3] = {"數字", "變數", "運算子"};  // 儲存類型的字串陣列
-    vector<token> vector_infix;                        // 儲存轉成vector的infix
-    vector<token> postfix;                             // 儲存轉化過後的postfix
+    vector<Token> vector_infix;                         // 儲存轉成vector的infix
+    vector<Token> postfix;                              // 儲存轉化過後的postfix
     clearScreen();
     cout << "Enter a infix expression: ";  // 提示輸入中序表達式
     getline(cin, infix);                   // 讀取整行輸入
@@ -713,15 +747,15 @@ void calculateExp(vector<Variable>& variableList) {
     }
 
     cout << endl;
-    calulate(variableList, infix);                 // 計算表達式
+    // calulate(variableList, infix);                 // 計算表達式
     cout << "Press Enter to continue..." << endl;  // 提示按下 Enter 鍵繼續
     cin.get();                                     // 等待使用者按下 Enter 鍵
 }
 
 void testFunction(const string infix, vector<Variable>& variableList) {
-    string print_type[3] = {"數字", "變數", "運算子"};               // 儲存類型的字串陣列
-    vector<token> vector_infix;                                     // 儲存轉成vector的infix
-    vector<token> postfix;                                          // 儲存轉化過後的postfix
+    string print_type[3] = {"數字", "變數", "運算子"};              // 儲存類型的字串陣列
+    vector<Token> vector_infix;                                     // 儲存轉成vector的infix
+    vector<Token> postfix;                                          // 儲存轉化過後的postfix
     bool check = infixToVector(infix, vector_infix, variableList);  // 將infix轉換為vector
     if (check == false) {
         cout << "Invalid" << endl;  // 錯誤提示
