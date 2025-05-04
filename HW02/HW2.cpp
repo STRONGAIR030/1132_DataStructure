@@ -500,99 +500,8 @@ void InfixToPostfix(const vector<Token>& infix, vector<Token>& postfix) {
     }
 }
 
-void enterVar(vector<Variable>& variableList) {
-    cout << "Enter a variable name(only alpha and not include AND, OR, NOT, XOR, True, False): ";
-    string name;
-    getline(cin, name);  // 輸入變數名稱
-    for (int i = 0; i < variableList.size(); i++) {
-        if (variableList[i].name == name) {
-            cout << "Error: Variable name already exists" << endl;  // 錯誤提示
-            return;
-        }
-    }
-    cout << "Enter a variable value(float): ";
-    float value = enterFloat();  // 輸入變數值
-    while (isnan(value)) {
-        cout << "Error: Invalid value, Try again: ";  // 錯誤提示
-        value = enterFloat();                         // 輸入變數值
-    }
-    variableList.emplace_back(name, value);  // 將變數加入變數列表
-}
-
-void editVar(vector<Variable>& variableList) {
-    if (variableList.empty()) {
-        cout << "Error: No variable to edit" << endl;  // 錯誤提示
-        cout << "Press Enter to continue..." << endl;  // 提示按下 Enter 鍵繼續
-        cin.get();                                     // 等待使用者按下 Enter 鍵
-        return;
-    }
-
-    for (int i = 0; i < variableList.size(); i++) {
-        cout << i << ". " << variableList[i].name << " == " << variableList[i].value << endl;  // 輸出變數名稱
-    }
-
-    int choose = -1;
-    cout << "choose variable: ";  // 提示選擇變數
-    choose = enterInt();          // 輸入選擇的變數
-    while (choose < 0 || choose >= variableList.size()) {
-        cout << "Error: Invalid choice, Try again: ";  // 錯誤提示
-        choose = enterInt();                           // 輸入選擇的變數
-    }
-
-    cout << "Enter edit value: ";
-    variableList[choose].value = enterFloat();  // 輸入變數值
-    while (isnan(variableList[choose].value)) {
-        cout << "Error: Invalid value, Try again: ";  // 錯誤提示
-        variableList[choose].value = enterFloat();    // 輸入變數值
-    }
-}
-
-// --------------------------------------------------------
-//                          注意事項
-// --------------------------------------------------------
-// 目前有的功能:
-// - 可以處理多位數字、正負號(+---++--a是合法的)、小數、變數(只能是字母且不能包含AND、OR、XOR、NOT)
-// - 可以處理一般運算符號(+ - * ^ / %)
-// - 可以處理邏輯符號(AND、OR、XOR、NOT)
-// - 可以處裡比較符號(== != > < >= <=)
-// --------------------------------------------------------
-// 計算實作體醒:
-// 我會用vector<Token>來儲存後序表達式。
-// 正常的運算子是如果該算子前面有兩個數字，則pop兩個數字並計算，然後push回去。
-// !負號和NOT運算子是如果該算子前面有一個數字，則pop一個數字並計算，然後push回去。
-// 注意小數有三種情況： 1. 123.123 2. .3 = 0.3 3. 123. = 123.0 經過轉換後只會有這三種情況，你們要自己轉成數字。
-// 測試案例可以叫gpt幫你生成。
-// 以下三個是計算時才會驗證的錯誤
-// AND/OR/XOR 左右是否為布林值
-// 比較運算符的兩邊是否為合法比較目標 (如 a == b == c 不合法)
-// NOT 是否接的是布林條件或合法的邏輯組合 (如 NOT(a + b) 不合法)
-// 現在數字(0、1)和boolean分開了，boolean會是True或False他的type一樣是數字。
-// --------------------------------------------------------
-// 統一事項(很重要):
-// 錯誤統一寫成這樣:  cout << "<甚麼錯誤>: <錯在哪> ";
-// 取得輸入一慮用getline(cin, str)，如果是float使用enterFloat()
-// 如果要用 cin << 變數; 後面要在加上cin.ignore();
-// 可以使用getVariable來取取變數的值，如果變數不存在會回傳NAN，否則回傳其值。
-// 可以使用isnan()來判斷是否為NAN，來檢查變數是否存在。
-// --------------------------------------------------------
-
 // 計算結果
-void calulate(vector<Variable>& variableList, const string infix) {
-    vector<Token> vector_infix;
-    vector<Token> postfix;
-
-    if (!infixToVector(infix, vector_infix, variableList)) {
-        cout << "Invalid expression: Failed to parse infix to vector" << endl;
-        return;
-    }
-
-    if (!checkExpression(vector_infix)) {
-        cout << "Invalid expression: Syntax error" << endl;
-        return;
-    }
-
-    InfixToPostfix(vector_infix, postfix);
-
+void calulate(vector<Variable>& variableList, const vector<Token>& postfix) {
     Stack calcStack;
 
     for (const auto& tok : postfix) {
@@ -651,9 +560,12 @@ void calulate(vector<Variable>& variableList, const string infix) {
                 bool right = (rightStr == "True");
                 bool result;
 
-                if (op == "AND") result = left && right;
-                else if (op == "OR") result = left || right;
-                else result = left ^ right; // XOR
+                if (op == "AND")
+                    result = left && right;
+                else if (op == "OR")
+                    result = left || right;
+                else
+                    result = left ^ right;  // XOR
 
                 calcStack.push(Token(result ? "True" : "False", 0));
             }
@@ -669,6 +581,10 @@ void calulate(vector<Variable>& variableList, const string infix) {
                     return;
                 }
                 string leftStr = calcStack.pop().str;
+                if (rightStr == "True" || rightStr == "False" || leftStr == "True" || leftStr == "False") {
+                    cout << "Logic error: Comparison/Normal operands must be numbers" << endl;
+                    return;
+                }
 
                 // 處理比較邏輯
                 float left = stof(leftStr);
@@ -735,6 +651,55 @@ void calulate(vector<Variable>& variableList, const string infix) {
     }
 }
 
+// 輸入變數功能
+void enterVar(vector<Variable>& variableList) {
+    cout << "Enter a variable name(only alpha and not include AND, OR, NOT, XOR, True, False): ";
+    string name;
+    getline(cin, name);  // 輸入變數名稱
+    for (int i = 0; i < variableList.size(); i++) {
+        if (variableList[i].name == name) {
+            cout << "Error: Variable name already exists" << endl;  // 錯誤提示
+            return;
+        }
+    }
+    cout << "Enter a variable value(float): ";
+    float value = enterFloat();  // 輸入變數值
+    while (isnan(value)) {
+        cout << "Error: Invalid value, Try again: ";  // 錯誤提示
+        value = enterFloat();                         // 輸入變數值
+    }
+    variableList.emplace_back(name, value);  // 將變數加入變數列表
+}
+
+// 編輯變數功能
+void editVar(vector<Variable>& variableList) {
+    if (variableList.empty()) {
+        cout << "Error: No variable to edit" << endl;  // 錯誤提示
+        cout << "Press Enter to continue..." << endl;  // 提示按下 Enter 鍵繼續
+        cin.get();                                     // 等待使用者按下 Enter 鍵
+        return;
+    }
+
+    for (int i = 0; i < variableList.size(); i++) {
+        cout << i << ". " << variableList[i].name << " == " << variableList[i].value << endl;  // 輸出變數名稱
+    }
+
+    int choose = -1;
+    cout << "choose variable: ";  // 提示選擇變數
+    choose = enterInt();          // 輸入選擇的變數
+    while (choose < 0 || choose >= variableList.size()) {
+        cout << "Error: Invalid choice, Try again: ";  // 錯誤提示
+        choose = enterInt();                           // 輸入選擇的變數
+    }
+
+    cout << "Enter edit value: ";
+    variableList[choose].value = enterFloat();  // 輸入變數值
+    while (isnan(variableList[choose].value)) {
+        cout << "Error: Invalid value, Try again: ";  // 錯誤提示
+        variableList[choose].value = enterFloat();    // 輸入變數值
+    }
+}
+
 // 計算功能
 void calculateExp(vector<Variable>& variableList) {
     string infix;
@@ -746,53 +711,23 @@ void calculateExp(vector<Variable>& variableList) {
     getline(cin, infix);                   // 讀取整行輸入
     bool check = infixToVector(infix, vector_infix, variableList);
     if (check) {
-        for (int i = 0; i < vector_infix.size(); i++) {
-            cout << i << ". " << vector_infix[i].str << " " << print_type[vector_infix[i].type] << endl;  // 輸出字串和類型
-        }
+        // for (int i = 0; i < vector_infix.size(); i++) {
+        //     cout << i << ". " << vector_infix[i].str << " " << print_type[vector_infix[i].type] << endl;  // 輸出字串和類型
+        // }
         check = checkExpression(vector_infix);  // 檢查表達式是否有效
-
         if (check) {
-            cout << "Valid" << endl;                // 如果有效，則輸出 Valid
             InfixToPostfix(vector_infix, postfix);  // 將infix轉換為postfix
+            cout << "Postfix expression: ";         // 輸出後序表達式
             for (int i = 0; i < postfix.size(); i++) {
                 cout << postfix[i].str << " ";  // 輸出後序表達式
             }
             cout << endl;
-        } else {
-            cout << "Invalid" << endl;  // 如果無效，則輸出 Invalid
+            calulate(variableList, postfix);  // 計算表達式
         }
-    } else {
-        cout << "Invalid" << endl;  // 如果無效，則輸出 Invalid
     }
 
-    cout << endl;
-    calulate(variableList, infix);                 // 計算表達式
     cout << "Press Enter to continue..." << endl;  // 提示按下 Enter 鍵繼續
     cin.get();                                     // 等待使用者按下 Enter 鍵
-}
-
-void testFunction(const string infix, vector<Variable>& variableList) {
-    string print_type[3] = {"數字", "變數", "運算子"};              // 儲存類型的字串陣列
-    vector<Token> vector_infix;                                     // 儲存轉成vector的infix
-    vector<Token> postfix;                                          // 儲存轉化過後的postfix
-    bool check = infixToVector(infix, vector_infix, variableList);  // 將infix轉換為vector
-    if (check == false) {
-        cout << "Invalid" << endl;  // 錯誤提示
-        return;
-    }
-    for (int i = 0; i < vector_infix.size(); i++) {
-        cout << i << ". " << vector_infix[i].str << " " << print_type[vector_infix[i].type] << endl;  // 輸出字串和類型
-    }
-    check = checkExpression(vector_infix);  // 檢查表達式是否有效
-    if (check == false) {
-        cout << "Invalid" << endl;  // 錯誤提示
-        return;
-    }
-    InfixToPostfix(vector_infix, postfix);  // 將infix轉換為postfix
-    for (int i = 0; i < postfix.size(); i++) {
-        cout << postfix[i].str << " ";  // 輸出後序表達式
-    }
-    cout << endl;
 }
 
 int main() {
@@ -821,9 +756,6 @@ int main() {
             cin.ignore();                                  // 清除緩衝區
         }
         clearScreen();
-        // string infix;
-        // getline(cin, infix);                // 讀取整行輸入
-        // testFunction(infix, variableList);  // 測試函數
     }
     return 0;
 }
