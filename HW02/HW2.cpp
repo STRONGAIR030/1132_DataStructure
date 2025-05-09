@@ -501,23 +501,12 @@ void InfixToPostfix(const vector<Token>& infix, vector<Token>& postfix) {
 }
 
 // 計算結果
-void calulate(vector<Variable>& variableList, const string infix) {
-    vector<Token> vector_infix;
-    vector<Token> postfix;
-
-    if (!infixToVector(infix, vector_infix, variableList)) {
-        cout << "Invalid expression: Failed to parse infix to vector" << endl;
-        return;
-    }
-
-    if (!checkExpression(vector_infix)) {
-        cout << "Invalid expression: Syntax error" << endl;
-        return;
-    }
-
-    InfixToPostfix(vector_infix, postfix);
-
+void calulate(vector<Variable>& variableList, const vector<Token>& postfix) {
     Stack calcStack;
+    for (const auto& var : variableList) {
+        cout << var.name << " : " << var.value << endl;  // 印出變數表
+    }
+    cout << "-------------------------" << endl;
 
     for (const auto& tok : postfix) {
         if (tok.type == 0) {  // 如果是數字，則直接push到Stack
