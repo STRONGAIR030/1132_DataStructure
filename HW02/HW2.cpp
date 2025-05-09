@@ -501,63 +501,78 @@ void InfixToPostfix(const vector<Token>& infix, vector<Token>& postfix) {
 }
 
 // 計算結果
-void calulate(vector<Variable>& variableList, const vector<Token>& postfix) {
+void calulate(vector<Variable>& variableList, const string infix) {
+    vector<Token> vector_infix;
+    vector<Token> postfix;
+
+    if (!infixToVector(infix, vector_infix, variableList)) {
+        cout << "Invalid expression: Failed to parse infix to vector" << endl;
+        return;
+    }
+
+    if (!checkExpression(vector_infix)) {
+        cout << "Invalid expression: Syntax error" << endl;
+        return;
+    }
+
+    InfixToPostfix(vector_infix, postfix);
+
     Stack calcStack;
 
     for (const auto& tok : postfix) {
-        if (tok.type == 0) {
+        if (tok.type == 0) {  // 如果是數字，則直接push到Stack
             calcStack.push(tok);
-        } else if (tok.type == 1) {
-            float value = getVarialbe(tok.str, variableList);
+        } else if (tok.type == 1) {                            // 如果是變數，則先檢查是否存在
+            float value = getVarialbe(tok.str, variableList);  // 取得值
             if (isnan(value)) {
-                cout << "Invalid expression: Undefined variable " << tok.str << endl;
+                cout << "Invalid expression: Undefined variable " << tok.str << endl;  // 錯誤提示
                 return;
             }
-            calcStack.push(Token(to_string(value), 0));
-        } else if (tok.type == 2) {
+            calcStack.push(Token(to_string(value), 0));  // 將變數的值轉換為字串並push到Stack
+        } else if (tok.type == 2) {                      // 如果是運算子，則進行計算
             string op = tok.str;
 
-            if (op == "!") {
+            if (op == "!") {  // 處理負號
                 if (calcStack.isEmpty()) {
-                    cout << "Invalid expression: Missing operand for '!'" << endl;
+                    cout << "Invalid expression: Missing operand for '!'" << endl;  // 錯誤提示
                     return;
                 }
-                float operand = stof(calcStack.pop().str);
+                float operand = stof(calcStack.pop().str);  // 取得結果
                 calcStack.push(Token(to_string(-operand), 0));
             }
 
-            else if (op == "NOT") {
+            else if (op == "NOT") {  // 處理NOT閘
                 if (calcStack.isEmpty()) {
-                    cout << "Invalid expression: Missing operand for 'NOT'" << endl;
+                    cout << "Invalid expression: Missing operand for 'NOT'" << endl;  // 錯誤提示
                     return;
                 }
-                string operandStr = calcStack.pop().str;
-                if (operandStr != "True" && operandStr != "False") {
-                    cout << "Logic error: NOT operand must be boolean (True or False)" << endl;
+                string operandStr = calcStack.pop().str;                                         // 取得結果
+                if (operandStr != "True" && operandStr != "False") {                             // 檢查是否為布林值
+                    cout << "Logic error: NOT operand must be boolean (True or False)" << endl;  // 錯誤提示
                     return;
                 }
-                bool operand = (operandStr == "True");
+                bool operand = (operandStr == "True");  // 轉換為布林值
                 calcStack.push(Token(operand ? "False" : "True", 0));
             }
 
-            else if (op == "AND" || op == "OR" || op == "XOR") {
+            else if (op == "AND" || op == "OR" || op == "XOR") {  // 處理邏輯運算
                 if (calcStack.isEmpty()) {
-                    cout << "Invalid expression: Missing operands" << endl;
+                    cout << "Invalid expression: Missing operands" << endl;  // 錯誤提示
                     return;
                 }
-                string rightStr = calcStack.pop().str;
+                string rightStr = calcStack.pop().str;  // 取得右邊的值
                 if (calcStack.isEmpty()) {
-                    cout << "Invalid expression: Missing operands" << endl;
+                    cout << "Invalid expression: Missing operands" << endl;  // 錯誤提示
                     return;
                 }
-                string leftStr = calcStack.pop().str;
-                if ((leftStr != "True" && leftStr != "False") || (rightStr != "True" && rightStr != "False")) {
-                    cout << "Logic error: AND/OR/XOR operands must be boolean (True or False)" << endl;
+                string leftStr = calcStack.pop().str;                                                            // 取得左邊的值
+                if ((leftStr != "True" && leftStr != "False") || (rightStr != "True" && rightStr != "False")) {  // 檢查是否為布林值
+                    cout << "Logic error: AND/OR/XOR operands must be boolean (True or False)" << endl;          // 錯誤提示
                     return;
                 }
 
-                bool left = (leftStr == "True");
-                bool right = (rightStr == "True");
+                bool left = (leftStr == "True");    // 轉換為布林值
+                bool right = (rightStr == "True");  // 、、
                 bool result;
 
                 if (op == "AND")
@@ -567,31 +582,27 @@ void calulate(vector<Variable>& variableList, const vector<Token>& postfix) {
                 else
                     result = left ^ right;  // XOR
 
-                calcStack.push(Token(result ? "True" : "False", 0));
+                calcStack.push(Token(result ? "True" : "False", 0));  // 將結果轉換為字串並push到Stack
             }
 
             else {
-                if (calcStack.isEmpty()) {
-                    cout << "Invalid expression: Missing operands" << endl;
+                if (calcStack.isEmpty()) {                                   // 如果是一般運算子，則pop兩個數字進行計算
+                    cout << "Invalid expression: Missing operands" << endl;  // 錯誤提示
                     return;
                 }
-                string rightStr = calcStack.pop().str;
+                string rightStr = calcStack.pop().str;  // 取得右邊的值
                 if (calcStack.isEmpty()) {
-                    cout << "Invalid expression: Missing operands" << endl;
+                    cout << "Invalid expression: Missing operands" << endl;  // 錯誤提示
                     return;
                 }
                 string leftStr = calcStack.pop().str;
-                if (rightStr == "True" || rightStr == "False" || leftStr == "True" || leftStr == "False") {
-                    cout << "Logic error: Comparison/Normal operands must be numbers" << endl;
-                    return;
-                }
 
                 // 處理比較邏輯
-                float left = stof(leftStr);
-                float right = stof(rightStr);
+                float left = stof(leftStr);    // 轉換為浮點數
+                float right = stof(rightStr);  // 轉換為浮點數
                 string resultStr;
 
-                if (op == "+")
+                if (op == "+")  // +-*/運算
                     resultStr = to_string(left + right);
                 else if (op == "-")
                     resultStr = to_string(left - right);
@@ -599,7 +610,7 @@ void calulate(vector<Variable>& variableList, const vector<Token>& postfix) {
                     resultStr = to_string(left * right);
                 else if (op == "/") {
                     if (right == 0) {
-                        cout << "Invalid expression: Division by zero" << endl;
+                        cout << "Invalid expression: Division by zero" << endl;  // 錯誤提示(不能除0)
                         return;
                     }
                     resultStr = to_string(left / right);
@@ -608,7 +619,7 @@ void calulate(vector<Variable>& variableList, const vector<Token>& postfix) {
                 else if (op == "^")
                     resultStr = to_string(pow(left, right));
 
-                else if (op == "==")
+                else if (op == "==")  // 比較運算↓↓(only boolean)
                     resultStr = (left == right) ? "True" : "False";
                 else if (op == "!=")
                     resultStr = (left != right) ? "True" : "False";
@@ -622,32 +633,32 @@ void calulate(vector<Variable>& variableList, const vector<Token>& postfix) {
                     resultStr = (left >= right) ? "True" : "False";
 
                 else {
-                    cout << "Invalid expression: Unsupported operator " << op << endl;
+                    cout << "Invalid expression: Unsupported operator " << op << endl;  // 錯誤提示
                     return;
                 }
 
-                calcStack.push(Token(resultStr, 0));
+                calcStack.push(Token(resultStr, 0));  // 將結果轉換為字串並push到Stack
             }
         }
     }
 
-    if (calcStack.isEmpty() || calcStack.peek().type != 0) {
-        cout << "Invalid expression: Calculation error" << endl;
+    if (calcStack.isEmpty() || calcStack.peek().type != 0) {      // 檢查Stack是否為空或最後一個元素不是數字
+        cout << "Invalid expression: Calculation error" << endl;  // 錯誤提示
         return;
     }
 
-    string finalResultStr = calcStack.pop().str;
+    string finalResultStr = calcStack.pop().str;  // 取得最後的結果
 
-    if (!calcStack.isEmpty()) {
-        cout << "Invalid expression: Extra operands" << endl;
+    if (!calcStack.isEmpty()) {                                // 如果Stack不為空，則表示有多餘的運算子或數字
+        cout << "Invalid expression: Extra operands" << endl;  // 錯誤提示
         return;
     }
 
     // 輸出結果
-    if (finalResultStr == "True" || finalResultStr == "False") {
-        cout << "Result: " << finalResultStr << endl;
+    if (finalResultStr == "True" || finalResultStr == "False") {  // 如果結果是布林值，則輸出布林值
+        cout << "Result: " << finalResultStr << endl;             // 輸出布林值
     } else {
-        cout << "Result: " << stof(finalResultStr) << endl;
+        cout << "Result: " << stof(finalResultStr) << endl;  // 如果結果是數字，則輸出數字
     }
 }
 
