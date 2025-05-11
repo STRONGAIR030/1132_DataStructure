@@ -437,7 +437,13 @@ bool checkExpression(const vector<Token>& infix) {
         return false;                                             // 返回錯誤
     }
 
-    return (leftParentheses == rightParentheses);  // 檢查括號數量
+    // 檢查括號數量
+    if (!(leftParentheses == rightParentheses)) {
+        cout << "Invalid expression: parentheses amount error" << endl;  // 錯誤提示
+        return false;                                                    // 返回錯誤
+    }
+
+    return true;  // 如果都合法，則返回true
 }
 
 // 將中序表達式 (infix) 轉換為後序表達式 (postfix)
