@@ -2,47 +2,47 @@
 #include <queue>
 #include <vector>
 using namespace std;
-const int EMPTY = NULL;  // ç”¨ NULL ä»£è¡¨æ²’æœ‰ç¯€é»
+const int EMPTY = NULL;  // ¥Î NULL ¥Nªí¨S¦³¸`ÂI
 class TreeNode {
    public:
-    int value;        // ç¯€é»å€¼
-    TreeNode* left;   // å·¦å­ç¯€é»
-    TreeNode* right;  // å³å­ç¯€é»
+    int value;        // ¸`ÂI­È
+    TreeNode* left;   // ¥ª¤l¸`ÂI
+    TreeNode* right;  // ¥k¤l¸`ÂI
 
-    TreeNode(int val) : value(val), left(nullptr), right(nullptr) {}  // åˆå§‹åŒ–ç¯€é»
+    TreeNode(int val) : value(val), left(nullptr), right(nullptr) {}  // ªì©l¤Æ¸`ÂI
 };
 
 class BinaryTree {
    public:
-    TreeNode* root;  // æ¨¹æ ¹ç¯€é»
+    TreeNode* root;  // ¾ğ®Ú¸`ÂI
 
     BinaryTree() : root(nullptr) {}
 
-    TreeNode* buildTree(const vector<int>& arr) {  // å»ºç«‹æ¨¹
+    TreeNode* buildTree(const vector<int>& arr) {  // «Ø¥ß¾ğ
         if (arr.empty() || arr[0] == EMPTY) return nullptr;
 
-        queue<TreeNode**> q;          // å»ºç«‹queueå„²å­˜å¾…è™•ç†çš„ç¯€é»æŒ‡æ¨™
-        root = new TreeNode(arr[0]);  // å»ºç«‹æ ¹ç¯€é» (é™£åˆ—ç¬¬ä¸€å€‹å…ƒç´ )
-        q.push(&root);                // å°‡æ ¹ç¯€é»çš„æŒ‡æ¨™åŠ å…¥queue
+        queue<TreeNode**> q;          // «Ø¥ßqueueÀx¦s«İ³B²zªº¸`ÂI«ü¼Ğ
+        root = new TreeNode(arr[0]);  // «Ø¥ß®Ú¸`ÂI (°}¦C²Ä¤@­Ó¤¸¯À)
+        q.push(&root);                // ±N®Ú¸`ÂIªº«ü¼Ğ¥[¤Jqueue
 
-        size_t i = 1;  // é™£åˆ—ç´¢å¼•
+        size_t i = 1;  // °}¦C¯Á¤Ş
         while (!q.empty() && i < arr.size()) {
-            TreeNode** nodePtr = q.front();  // å–å‡ºqueueçš„ç¬¬ä¸€å€‹ç¯€é»æŒ‡æ¨™
-            q.pop();                         // å°‡è©²ç¯€é»å¾queueä¸­åˆªé™¤
+            TreeNode** nodePtr = q.front();  // ¨ú¥Xqueueªº²Ä¤@­Ó¸`ÂI«ü¼Ğ
+            q.pop();                         // ±N¸Ó¸`ÂI±qqueue¤¤§R°£
 
-            // å·¦å­ç¯€é»
+            // ¥ª¤l¸`ÂI
             if (i < arr.size()) {
                 if (arr[i] != EMPTY) {
-                    (*nodePtr)->left = new TreeNode(arr[i]);  // æ·»åŠ å·¦å­ç¯€é»
-                    q.push(&((*nodePtr)->left));              // å°‡å·¦å­ç¯€é»çš„æŒ‡æ¨™åŠ å…¥queue
+                    (*nodePtr)->left = new TreeNode(arr[i]);  // ²K¥[¥ª¤l¸`ÂI
+                    q.push(&((*nodePtr)->left));              // ±N¥ª¤l¸`ÂIªº«ü¼Ğ¥[¤Jqueue
                 }
                 i++;
             }
-            // å³å­ç¯€é»
+            // ¥k¤l¸`ÂI
             if (i < arr.size()) {
                 if (arr[i] != EMPTY) {
-                    (*nodePtr)->right = new TreeNode(arr[i]);  // æ·»åŠ å³å­ç¯€é»
-                    q.push(&((*nodePtr)->right));              // å°‡å³å­ç¯€é»çš„æŒ‡æ¨™åŠ å…¥queue
+                    (*nodePtr)->right = new TreeNode(arr[i]);  // ²K¥[¥k¤l¸`ÂI
+                    q.push(&((*nodePtr)->right));              // ±N¥k¤l¸`ÂIªº«ü¼Ğ¥[¤Jqueue
                 }
                 i++;
             }
@@ -50,79 +50,49 @@ class BinaryTree {
         return root;
     }
 
-    void Depth_first_search(TreeNode* node) {  // æ·±åº¦å„ªå…ˆæœå°‹
+    void Depth_first_search(TreeNode* node) {  // ²`«×Àu¥ı·j´M
         if (node == nullptr) return;
-        cout << node->value << " ";       // è¨ªå•ç•¶å‰ç¯€é»çš„å€¼
-        Depth_first_search(node->left);   // éè¿´éæ­·å·¦å­æ¨¹
-        Depth_first_search(node->right);  // éè¿´éæ­·å³å­æ¨¹
+        cout << node->value << " ";       // ³X°İ·í«e¸`ÂIªº­È
+        Depth_first_search(node->left);   // »¼°j¹M¾ú¥ª¤l¾ğ
+        Depth_first_search(node->right);  // »¼°j¹M¾ú¥k¤l¾ğ
     }
 
     void Breadth_first_search(TreeNode* root) {
         if (root == nullptr) return;
-        queue<TreeNode*> q;  // å»ºç«‹queueå„²å­˜å¾…è™•ç†çš„ç¯€é»æŒ‡æ¨™
-        q.push(root);        // å°‡æ ¹ç¯€é»çš„æŒ‡æ¨™åŠ å…¥queue
+        queue<TreeNode*> q;  // «Ø¥ßqueueÀx¦s«İ³B²zªº¸`ÂI«ü¼Ğ
+        q.push(root);        // ±N®Ú¸`ÂIªº«ü¼Ğ¥[¤Jqueue
 
         while (!q.empty()) {
-            TreeNode* current = q.front();  // å–å‡ºqueueçš„ç¬¬ä¸€å€‹ç¯€é»æŒ‡æ¨™
-            q.pop();                        // å°‡è©²ç¯€é»å¾queueä¸­åˆªé™¤
+            TreeNode* current = q.front();  // ¨ú¥Xqueueªº²Ä¤@­Ó¸`ÂI«ü¼Ğ
+            q.pop();                        // ±N¸Ó¸`ÂI±qqueue¤¤§R°£
             cout << current->value << " ";
-            if (current->left) q.push(current->left);    // å°‡å·¦å­ç¯€é»çš„æŒ‡æ¨™åŠ å…¥queue
-            if (current->right) q.push(current->right);  // å°‡å·¦å­ç¯€é»çš„æŒ‡æ¨™åŠ å…¥queue
+            if (current->left) q.push(current->left);    // ±N¥ª¤l¸`ÂIªº«ü¼Ğ¥[¤Jqueue
+            if (current->right) q.push(current->right);  // ±N¥ª¤l¸`ÂIªº«ü¼Ğ¥[¤Jqueue
         }
     }
-    int level_sum(int layer, TreeNode* root) {
-        int level = 0;
-        int levelSum = 0;
-        queue<TreeNode*> q;
-        q.push(root);
+    void level_sum(int layer, TreeNode* root) {
+        int level = 0;       // ·í«e¼h¼Æ
+        int levelSum = 0;    // ¼hªºÁ`©M
+        queue<TreeNode*> q;  // «Ø¥ßqueueÀx¦s«İ³B²zªº¸`ÂI«ü¼Ğ
+        q.push(root);        // ±N®Ú¸`ÂIªº«ü¼Ğ¥[¤Jqueue
         while (!q.empty()) {
-            int levelSize = q.size();
-            for (int i = 0; i < levelSize; i++) {
-                TreeNode* current = q.front();
-                q.pop();
-                if (level == layer) {
-                    levelSum += current->value;
+            int levelSize = q.size();              // ·í«e¼hªº¸`ÂI¼Æ
+            for (int i = 0; i < levelSize; i++) {  // ¹M¾ú·í«e¼hªº©Ò¦³¸`ÂI
+                TreeNode* current = q.front();     // ¨ú¥Xqueueªº²Ä¤@­Ó¸`ÂI«ü¼Ğ
+                q.pop();                           // ±N¸Ó¸`ÂI±qqueue¤¤§R°£
+                if (level == layer) {              // ¦pªG·í«e¼h¼Æ¬O¬d¸ßªº¼h¼Æ
+                    levelSum += current->value;    // ²Ö¥[·í«e¸`ÂIªº­È
                 }
+                if (current->left) q.push(current->left);    // ±N¥ª¤l¸`ÂIªº«ü¼Ğ¥[¤Jqueue
+                if (current->right) q.push(current->right);  // ±N¥k¤l¸`ÂIªº«ü¼Ğ¥[¤Jqueue
             }
-            if (level == layer)
-                return levelSum;
-            level++;
+            if (level == layer) {                                           // ¦pªG·í«e¼h¼Æ¬O¬d¸ßªº¼h¼Æ
+                cout << "²Ä" << layer << "¼hªºÁ`©M: " << levelSum << endl;  // ¿é¥X·í«e¼hªºÁ`©M
+                return;
+            }
+            level++;  // ¼W¥[¼h¼Æ
         }
-    }
-
-    int cal_sum(TreeNode* node) {
-        if (node == nullptr) return 0;
-        if (node->right == nullptr && node->left == nullptr) return node->value;
-        int leftSum = cal_sum(node->left);
-        int rightSum = cal_sum(node->right);
-        return node->value + leftSum + rightSum;
-    }
-
-    bool search_node(int target, TreeNode* node) {
-        if (node == nullptr) return false;
-        if (node->value == target) {
-            if (node->left == nullptr && node->right == nullptr) {
-                cout << "è©²ç¯€é»ç‚ºè‘‰ç¯€é»ï¼Œæ²’æœ‰å­æ¨¹" << endl;
-                return true;
-            }
-            int leftSum = cal_sum(node->left);
-            int rightSum = cal_sum(node->right);
-            cout << "å·¦å­æ¨¹ç¸½å’Œ: " << leftSum << endl;
-            cout << "å³å­æ¨¹ç¸½å’Œ: " << rightSum << endl;
-            if (leftSum > rightSum) {
-                cout << "å·¦å­æ¨¹ç¸½å’Œè¼ƒå¤§" << endl;
-            } else if (leftSum < rightSum) {
-                cout << "å³å­æ¨¹ç¸½å’Œè¼ƒå¤§" << endl;
-            } else {
-                cout << "å…©é‚Šå­æ¨¹ä¸€æ¨£å¤§" << endl;
-            }
-            return true;
-        }
-
-        if (search_node(target, node->left) || search_node(target, node->right))
-            return true;
-
-        return false;
+        cout << "¶W¹L¾ğ°ª" << endl;  // ¦pªG¬d¸ßªº¼h¼Æ¶W¹L¾ğªº°ª«×¡A¿é¥X´£¥Ü
     }
 };
 
@@ -140,13 +110,9 @@ int main() {
     cout << endl;
 
     int layer;
-    cout << "è«‹è¼¸å…¥è¦æŸ¥è©¢çš„æ›¾æ•¸(å¾0é–‹å§‹): ";
-
-    int target;
-    cout << "è¼¸å…¥æ¬²æª¢æŸ¥çš„ç¯€é»å€¼: ";
-    cin >> target;
-    if (!tree.search_node(target, tree.root))
-        cout << "æœªæ‰¾åˆ°æŒ‡å®šç¯€é»" << endl;
+    cout << "½Ğ¿é¤J­n¬d¸ßªº´¿¼Æ(±q0¶}©l): ";
+    cin >> layer;
+    tree.level_sum(layer, tree.root);
 
     system("pause");
     return 0;
