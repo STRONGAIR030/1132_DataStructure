@@ -8,58 +8,62 @@ using namespace std;
 
 class Product {
    public:
-    string name;
-    int nice;
-    int expiry_day;
-    void print() {
-        cout << name << " " << nice << " " << expiry_day << endl;
-    }
+    string name;     // °Ó«~¦WºÙ
+    int nice;        // ¨üÅwªïµ{«×
+    int expiry_day;  // ¦³®Ä´Á­­
 };
 
-void switch_product(vector<Product*> product_list, int index1, int index2) {
+// ¥æ´«°Ó«~¦Cªí¤¤ªº¨â­Ó°Ó«~
+void switch_product(vector<Product*>& product_list, int index1, int index2) {
     Product* temp = product_list[index1];
     product_list[index1] = product_list[index2];
     product_list[index2] = temp;
 }
 
-void sort(vector<Product*> product_list) {
-    for (int i = 0; i < product_list.size(); i++) {
-        for (int j = 0; j < product_list.size(); j++) {
-            if (product_list[i]->expiry_day > product_list[j]->expiry_day) {
+// ¨Ï¥Îbubble sort¹ï°Ó«~¦Cªí¶i¦æ±Æ§Ç
+void sort(vector<Product*>& product_list) {
+    for (int i = 0; i < product_list.size(); i++) {                           // ¹M¾ú°Ó«~¦Cªí
+        for (int j = i + 1; j < product_list.size(); j++) {                   // ±qi+1¶}©l¤ñ¸û
+            if (product_list[i]->expiry_day > product_list[j]->expiry_day) {  // ¦pªG¦³®Ä´Á­­¸ûªø¡A«h¥æ´«
                 switch_product(product_list, i, j);
             } else if (product_list[i]->expiry_day == product_list[j]->expiry_day && product_list[i]->nice < product_list[j]->nice) {
-                switch_product(product_list, j, i);
+                // ¦pªG¦³®Ä´Á­­¬Û¦P¡A«h¤ñ¸û¨üÅwªïµ{«×¡A­Y¸û§C¡A«h¥æ´«
+                switch_product(product_list, i, j);
             }
         }
     }
 }
 
 int main() {
-    vector<Product*> product_list;
-    int product_num;
-    ifstream in;
-    string filename = "input1.txt";  // è«‹è²¼ä¸Šinputæª”æ¡ˆçš„æ­£ç¢ºè·¯å¾‘
-    in.open(filename);
-    in >> product_num;
-    for (int i = 0; i < product_num; i++) {
-        Product* new_product = new Product;
-        string temp = "";
-        in >> new_product->name;
+    vector<Product*> product_list;           // °Ó«~¦Cªí
+    int product_num;                         // °Ó«~¼Æ¶q
+    ifstream in;                             // ¿é¤JÀÉ®×¬y
+    string filename = "input2.txt";          // ½Ð¶K¤WinputÀÉ®×ªº¥¿½T¸ô®|
+    in.open(filename);                       // ¶}±ÒÀÉ®×
+    in >> product_num;                       // Åª¨ú°Ó«~¼Æ¶q
+    for (int i = 0; i < product_num; i++) {  // Åª¨ú¨C­Ó°Ó«~
+        Product* new_product = new Product;  // ³Ð«Ø·sªº°Ó«~ª«¥ó
+        string temp = "";                    // ¥Î©ó¼È¦s°Ó«~¦WºÙ
+        in >> new_product->name;             // Åª¨ú°Ó«~¦WºÙ
+
+        // ¬d¬Ý°Ó«~¦WÅª§¹¤F¨S
         in >> temp;
-        while (isalpha(temp[0])) {
-            new_product->name += " " + temp;
-            in >> temp;
+        while (isalpha(temp[0])) {            // ¦pªG¬O¦r¥À¡A«hÄ~ÄòÅª¨ú°Ó«~¦WºÙ
+            new_product->name += " " + temp;  // ±NÅª¨ú¨ìªº¦r¥À²K¥[¨ì°Ó«~¦WºÙ¤¤
+            in >> temp;                       // Ä~ÄòÅª¨ú¤U¤@­Ó¦r
         }
-        new_product->expiry_day = atoi(temp.c_str());
-        in >> new_product->nice;
-        product_list.push_back(new_product);
+        new_product->expiry_day = atoi(temp.c_str());  // ±NÅª¨ú¨ìªº¦r¦êÂà´«¬°¾ã¼Æ¡A§@¬°¦³®Ä´Á­­
+        in >> new_product->nice;                       // Åª¨ú¨üÅwªïµ{«×
+        product_list.push_back(new_product);           // ±N·s°Ó«~²K¥[¨ì°Ó«~¦Cªí¤¤
     }
 
-    sort(product_list);
-    cout << "å•†å“æŽ’åº:" << endl;
+    sort(product_list);  // ¹ï°Ó«~¦Cªí¶i¦æ±Æ§Ç
+
+    cout << "°Ó«~±Æ§Ç:" << endl;  // ¿é¥X±Æ§Ç«áªº°Ó«~¦Cªí
     for (int i = 0; i < product_list.size(); i++) {
-        product_list[i]->print();
+        cout << product_list[i]->name << endl;
     }
 
-    in.close();
+    in.close();  // Ãö³¬ÀÉ®×¬y
+    return 0;
 }
